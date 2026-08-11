@@ -292,6 +292,10 @@ const OPIC_SELF_INTRO = [
   "Let's start the interview. Tell me a little about yourself.",
   "Tell me about your daily routine on a typical weekday, from morning to night.",
   "Tell me about where you work or study and what you usually do there.",
+  "Tell me about your family and the people you live with.",
+  "What do you like to do in your free time? Tell me about your hobbies and interests.",
+  "Tell me about your closest friend — how you met and what you usually do together.",
+  "Describe your personality. What kind of person are you, and how would others describe you?",
 ];
 const OPIC_SURVEY_COMBOS = [
   {topic:"카페 Café", set:[
@@ -314,6 +318,38 @@ const OPIC_SURVEY_COMBOS = [
     {t:"묘사 Describe", q:"Describe the exercise or physical activity you usually do to stay healthy."},
     {t:"습관 Routine", q:"Walk me through your typical exercise routine from start to finish."},
     {t:"경험 Experience", q:"Tell me about a memorable experience related to exercise or sports."}]},
+  {topic:"독서 Reading", set:[
+    {t:"묘사 Describe", q:"Describe the kind of books you like to read and where you usually read them."},
+    {t:"습관 Routine", q:"When and how often do you read? Walk me through your usual reading habits."},
+    {t:"경험 Experience", q:"Tell me about a book that left a strong impression on you and why."}]},
+  {topic:"TV·드라마 TV Shows", set:[
+    {t:"묘사 Describe", q:"Describe the kind of TV shows or dramas you enjoy watching."},
+    {t:"습관 Routine", q:"When and how do you usually watch TV shows? Do you binge-watch or watch one at a time?"},
+    {t:"경험 Experience", q:"Tell me about a show you got really into recently and why you liked it."}]},
+  {topic:"게임 Gaming", set:[
+    {t:"묘사 Describe", q:"Describe the games you like to play and the device you play them on."},
+    {t:"습관 Routine", q:"When and how often do you usually play games, and who do you play with?"},
+    {t:"경험 Experience", q:"Tell me about a memorable moment you had while playing a game."}]},
+  {topic:"요리 Cooking", set:[
+    {t:"묘사 Describe", q:"Describe the kind of food you like to cook and what your kitchen is like."},
+    {t:"습관 Routine", q:"How often do you cook, and what do you usually make? Walk me through your process."},
+    {t:"경험 Experience", q:"Tell me about a time you cooked something that turned out really well — or really badly."}]},
+  {topic:"쇼핑 Shopping", set:[
+    {t:"묘사 Describe", q:"Describe the places where you usually go shopping."},
+    {t:"습관 Routine", q:"How and how often do you usually shop, and what kinds of things do you buy?"},
+    {t:"경험 Experience", q:"Tell me about a memorable shopping experience you had recently."}]},
+  {topic:"산책 Walking", set:[
+    {t:"묘사 Describe", q:"Describe the places where you like to take walks."},
+    {t:"습관 Routine", q:"When and how often do you go for walks, and what do you do while walking?"},
+    {t:"경험 Experience", q:"Tell me about a particularly memorable walk you took."}]},
+  {topic:"등산 Hiking", set:[
+    {t:"묘사 Describe", q:"Describe a mountain or trail you like to hike and what it looks like."},
+    {t:"습관 Routine", q:"How do you usually prepare for a hike, and what do you do on the mountain?"},
+    {t:"경험 Experience", q:"Tell me about a memorable hiking experience you had."}]},
+  {topic:"반려동물 Pets", set:[
+    {t:"묘사 Describe", q:"Describe a pet you have or would like to have."},
+    {t:"습관 Routine", q:"What do you usually do to take care of a pet during a typical day?"},
+    {t:"경험 Experience", q:"Tell me about a memorable moment you had with a pet or an animal."}]},
 ];
 const OPIC_SURPRISE_COMBOS = [
   {topic:"은행 Bank", set:[
@@ -336,6 +372,34 @@ const OPIC_SURPRISE_COMBOS = [
     {t:"묘사 Describe", q:"Describe the weather and the seasons where you live."},
     {t:"습관 Routine", q:"What do you usually do differently depending on the weather?"},
     {t:"경험 Experience", q:"Tell me about a time when the weather really affected your plans."}]},
+  {topic:"인터넷 Internet", set:[
+    {t:"묘사 Describe", q:"Describe how you usually use the internet and the devices you use."},
+    {t:"습관 Routine", q:"What websites or apps do you visit most, and what do you do on them?"},
+    {t:"경험 Experience", q:"Tell me about a time the internet was really helpful — or caused a problem for you."}]},
+  {topic:"우리 동네 Neighborhood", set:[
+    {t:"묘사 Describe", q:"Describe the neighborhood where you live. What is it like?"},
+    {t:"습관 Routine", q:"What do you usually do around your neighborhood?"},
+    {t:"경험 Experience", q:"Tell me about a memorable experience you had in your neighborhood."}]},
+  {topic:"명절·휴일 Holidays", set:[
+    {t:"묘사 Describe", q:"Describe a holiday that is important in your country."},
+    {t:"습관 Routine", q:"What do you and your family usually do on that holiday?"},
+    {t:"경험 Experience", q:"Tell me about a memorable holiday you spent recently."}]},
+  {topic:"외식 Eating Out", set:[
+    {t:"묘사 Describe", q:"Describe a restaurant you like to eat at. What is it like?"},
+    {t:"습관 Routine", q:"How often do you eat out, and what do you usually order?"},
+    {t:"경험 Experience", q:"Tell me about a memorable dining-out experience you had."}]},
+  {topic:"건강 Health", set:[
+    {t:"묘사 Describe", q:"Describe what you do to stay healthy."},
+    {t:"습관 Routine", q:"What healthy or unhealthy habits do you have in your daily life?"},
+    {t:"경험 Experience", q:"Tell me about a time you got sick or had to take care of your health."}]},
+  {topic:"패션 Fashion", set:[
+    {t:"묘사 Describe", q:"Describe your usual style of clothing."},
+    {t:"습관 Routine", q:"How do you usually decide what to wear, and where do you buy your clothes?"},
+    {t:"경험 Experience", q:"Tell me about a time you bought or wore something you really loved."}]},
+  {topic:"재활용 Recycling", set:[
+    {t:"묘사 Describe", q:"Describe how recycling works where you live."},
+    {t:"습관 Routine", q:"What do you usually do to recycle or reduce waste at home?"},
+    {t:"경험 Experience", q:"Tell me about a time recycling or the environment came up in your daily life."}]},
 ];
 const OPIC_ROLEPLAY = [
   {topic:"카페 Café", set:[
@@ -346,6 +410,22 @@ const OPIC_ROLEPLAY = [
     {t:"질문하기 Ask", q:"Your friend just got back from a trip you're planning to take. Ask three or four questions to get useful information."},
     {t:"문제해결 Solve", q:"You're supposed to meet a friend, but you can't find the meeting place. Call your friend, explain, and solve the problem together."},
     {t:"유사경험 Experience", q:"Tell me about a time a plan went wrong or you got lost. What happened and how did you handle it?"}]},
+  {topic:"호텔 Hotel", set:[
+    {t:"질문하기 Ask", q:"You want to book a hotel room. Call the hotel and ask three or four questions about rooms, price, and amenities."},
+    {t:"문제해결 Solve", q:"You arrive at your hotel but there's a problem with your reservation. Explain the situation and ask them to fix it."},
+    {t:"유사경험 Experience", q:"Tell me about a time you had a problem at a hotel or while traveling. What happened?"}]},
+  {topic:"병원 Doctor", set:[
+    {t:"질문하기 Ask", q:"You need to make a doctor's appointment. Call the clinic and ask three or four questions."},
+    {t:"문제해결 Solve", q:"You have an appointment but you're running late and might miss it. Call and solve the situation."},
+    {t:"유사경험 Experience", q:"Tell me about a time you had to visit a doctor or hospital unexpectedly."}]},
+  {topic:"상점 교환 Store", set:[
+    {t:"질문하기 Ask", q:"You bought a product but want to know the return policy. Call the store and ask three or four questions."},
+    {t:"문제해결 Solve", q:"The item you bought is broken or the wrong one. Explain the problem and ask for an exchange or refund."},
+    {t:"유사경험 Experience", q:"Tell me about a time you had to return or exchange something. How did it go?"}]},
+  {topic:"친구 초대 Inviting", set:[
+    {t:"질문하기 Ask", q:"You want to invite a friend to an event this weekend. Call and ask a few questions to make a plan."},
+    {t:"문제해결 Solve", q:"You made plans with a friend, but something came up and you need to change them. Call and work out a new plan."},
+    {t:"유사경험 Experience", q:"Tell me about a time your plans with a friend changed at the last minute."}]},
 ];
 const OPIC_ADVANCED = [
   {t:"Advance", q:"Some people believe smartphones have made people less social, while others disagree. Discuss both sides and give your own opinion with specific reasons."},
@@ -353,6 +433,13 @@ const OPIC_ADVANCED = [
   {t:"Advance", q:"Compare how people spent their free time 20 years ago with how they spend it today, explain the reasons for the changes, and predict how it might change in the future."},
   {t:"Advance", q:"A friend from another country is moving to your city. Explain the challenges they might face, how they could prepare, and what advice you would give them."},
   {t:"Advance", q:"Some people prefer to travel alone, while others prefer to travel with a group. Discuss the advantages and disadvantages of each, and explain which you prefer and why."},
+  {t:"Advance", q:"Technology has changed the way people communicate with friends and family. Discuss the positive and negative effects, and share your own view."},
+  {t:"Advance", q:"More people are shopping online instead of in physical stores. What are the advantages and disadvantages, and how do you think shopping will change in the future?"},
+  {t:"Advance", q:"In many countries people are living longer than before. What challenges does an aging population create, and what could society do to prepare?"},
+  {t:"Advance", q:"Some believe studying abroad is the best way to learn a language, while others disagree. Discuss both views and give your opinion."},
+  {t:"Advance", q:"Public transportation and private cars each have pros and cons. Compare them and explain which you think is better for a big city."},
+  {t:"Advance", q:"Artificial intelligence is starting to change many jobs. What opportunities and concerns does this create, and how should people prepare?"},
+  {t:"Advance", q:"Work-life balance is a common topic these days. Why do you think it's hard to achieve, and what can individuals and companies do about it?"},
 ];
 
 // ================== 일상 회화 ==================
@@ -654,6 +741,9 @@ $("ttsBtn").onclick=()=>{
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 function resetAnswer(){
   state.finalText=""; state.committed=""; state.sessionFinal=""; state.duration=0; state.chunks=[];
+  if(state.timerId){ clearInterval(state.timerId); }
+  state.typing=false;
+  { const tb=$("typeBtn"); if(tb){ tb.innerHTML="✍️ 직접 입력"; tb.classList.add("btn-ghost"); tb.classList.remove("btn-rec"); } }
   if(state.audioURL){URL.revokeObjectURL(state.audioURL);state.audioURL=null;}
   $("transcript").classList.remove("hidden");
   $("transcript").innerHTML='<span class="muted">녹음을 시작하면 말한 내용이 실시간으로 나타납니다.</span>';
@@ -663,14 +753,29 @@ function resetAnswer(){
   $("feedbackBtn").disabled=true; $("mockNextBtn").disabled=true; $("prepMsg").textContent="";
 }
 $("recBtn").onclick=()=>{ state.recognizing ? stopRecording() : beginWithPrep(); };
-$("typeBtn").onclick=()=>openTypeMode();
-function openTypeMode(){
+$("typeBtn").onclick=()=>{ state.typing ? stopTyping() : startTyping(); };
+function startTyping(){
   if(state.recognizing) stopRecording();
+  resetAnswer();
+  state.typing=true;
   $("transcript").classList.add("hidden");
-  const ta=$("transcriptEdit"); ta.classList.remove("hidden");
-  if(!ta.value) ta.value=state.finalText||"";
+  const ta=$("transcriptEdit"); ta.classList.remove("hidden"); ta.value="";
   ta.oninput=()=>{ state.finalText=ta.value; computeMetrics(); refreshActionEnabled(); };
+  state.recStart=Date.now();
+  state.timerId=setInterval(()=>{ $("timer").textContent=fmt(Math.floor((Date.now()-state.recStart)/1000)); },250);
+  $("typeBtn").innerHTML="⏹ 입력 완료"; $("typeBtn").classList.remove("btn-ghost"); $("typeBtn").classList.add("btn-rec");
+  $("recBtn").disabled=true;
   computeMetrics(); ta.focus();
+}
+function stopTyping(){
+  if(!state.typing) return;
+  state.typing=false; clearInterval(state.timerId);
+  state.duration=Math.max(1,Math.round((Date.now()-state.recStart)/1000));
+  $("timer").textContent=fmt(state.duration);
+  $("typeBtn").innerHTML="✍️ 직접 입력"; $("typeBtn").classList.add("btn-ghost"); $("typeBtn").classList.remove("btn-rec");
+  $("recBtn").disabled=false;
+  state.finalText=$("transcriptEdit").value;
+  computeMetrics(); refreshActionEnabled();
 }
 function refreshActionEnabled(){
   const ok=(state.finalText||"").trim().length>=2;
@@ -835,6 +940,7 @@ function buildSchema(scoreKeys){
       structureFeedback:{type:"string"},modelAnswer:{type:"string"},nextFocus:{type:"string"}}};
 }
 $("feedbackBtn").onclick=async()=>{
+  if(state.typing) stopTyping();
   if(!store.k && !store.passcode){ $("settingsCard").classList.remove("hidden"); showFb("err","먼저 설정에서 API 키 또는 접속 비밀번호를 입력하세요."); return; }
   const answer=(state.finalText||"").trim();
   if(answer.length<2){ showFb("err","답변 내용이 없습니다."); return; }
@@ -923,8 +1029,8 @@ function saveMockAnswer(){
   const item=mock.queue[mock.idx];
   mock.answers.push({n:mock.idx+1,section:item.section,type:item.type,q:item.q,transcript:(state.finalText||"").trim(),dur:state.duration});
 }
-$("mockNextBtn").onclick=()=>{ if(state.recognizing) stopRecording(); saveMockAnswer(); mock.idx++; loadMockQuestion(); };
-$("mockScoreBtn").onclick=async()=>{ if(state.recognizing) stopRecording(); saveMockAnswer(); await runMockScore(); };
+$("mockNextBtn").onclick=()=>{ if(state.recognizing) stopRecording(); if(state.typing) stopTyping(); saveMockAnswer(); mock.idx++; loadMockQuestion(); };
+$("mockScoreBtn").onclick=async()=>{ if(state.recognizing) stopRecording(); if(state.typing) stopTyping(); saveMockAnswer(); await runMockScore(); };
 
 function mockSystem(lang){
   const T=TARGETS[mock.target];
