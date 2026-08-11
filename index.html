@@ -152,12 +152,11 @@
   <div class="card hidden" id="settingsCard">
     <h2>설정</h2>
     <div class="banner info" style="margin-bottom:14px">
-      API 키는 이 브라우저(localStorage)에만 저장되고 <b>Anthropic 외 어디로도 전송되지 않습니다.</b>
-      키 발급·크레딧: <span class="muted">console.anthropic.com</span>
+      <b>두 가지 방식</b> — ① 이 브라우저에 <b>API 키</b> 직접 저장(개인·로컬용), 또는 ② Vercel 서버에 키를 넣고 <b>접속 비밀번호</b>로 사용(모든 기기 공통, 키 노출 없음). 값은 이 브라우저에만 저장되고 Anthropic 외 어디로도 전송되지 않습니다.
     </div>
     <div class="row">
       <div>
-        <label>Anthropic API 키</label>
+        <label>Anthropic API 키 <span class="muted">(개인·로컬용)</span></label>
         <input id="apiKey" type="password" placeholder="sk-ant-...">
       </div>
       <div style="max-width:230px">
@@ -167,6 +166,12 @@
           <option value="claude-opus-5">Opus 5 (가장 정교)</option>
           <option value="claude-haiku-4-5">Haiku 4.5 (초저가·빠른 점검)</option>
         </select>
+      </div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <div>
+        <label>접속 비밀번호 <span class="muted">(서버 배포 시)</span></label>
+        <input id="passcode" type="password" placeholder="서버에 키를 넣었다면 여기에 비밀번호">
       </div>
     </div>
     <div style="margin-top:12px" class="row">
@@ -488,6 +493,8 @@ const $ = id => document.getElementById(id);
 const store = {
   get k(){return localStorage.getItem("spk_key")||localStorage.getItem("opic_key")||""},
   set k(v){localStorage.setItem("spk_key",v)},
+  get passcode(){return localStorage.getItem("spk_pass")||""},
+  set passcode(v){localStorage.setItem("spk_pass",v)},
   get model(){return localStorage.getItem("spk_model")||"claude-sonnet-5"},
   set model(v){localStorage.setItem("spk_model",v)},
   get fbLang(){return localStorage.getItem("spk_fblang")||"ko"},
@@ -522,10 +529,12 @@ $("settingsBtn").onclick=()=>$("settingsCard").classList.toggle("hidden");
 function loadSettings(){
   $("apiKey").value=store.k; $("model").value=store.model;
   $("fbLang").value=store.fbLang; $("prepTime").value=store.prep;
-  if(!store.k) $("settingsCard").classList.remove("hidden");
+  $("passcode").value=store.passcode;
+  if(!store.k && !store.passcode) $("settingsCard").classList.remove("hidden");
 }
 $("saveSettings").onclick=()=>{
   store.k=$("apiKey").value.trim(); store.model=$("model").value;
+  store.passcode=$("passcode").value.trim();
   store.fbLang=$("fbLang").value; store.prep=$("prepTime").value;
   $("saveMsg").textContent="✓ 저장됨"; setTimeout(()=>$("saveMsg").textContent="",2000);
   updateFbCost();
@@ -737,14 +746,30 @@ function computeMetrics(){
 }
 
 // ================== API 공통 ==================
-async function callClaude(system, userMsg, schema){
+// Try the server proxy first (key lives in Vercel env var); fall back to the
+// user's own browser-stored key if no server function is deployed (e.g. local).
+async function anthropicRaw(body){
+  let sr=null;
+  try{
+    sr=await fetch("/api/feedback",{method:"POST",
+      headers:{"content-type":"application/json","x-app-passcode":store.passcode||""},
+      body:JSON.stringify(body)});
+  }catch(e){ sr=null; }
+  if(sr && sr.status!==404 && sr.status!==501){
+    let data=null; try{data=await sr.json();}catch(e){}
+    if(sr.status===401) throw new Error("접속 비밀번호가 올바르지 않습니다. 설정에서 확인하세요.");
+    if(!sr.ok){ let m=(data&&(data.error&&data.error.message||data.error))||("서버 오류 "+sr.status);
+      if(sr.status===400 && /credit|balance/i.test(m)) m="서버 키의 크레딧이 부족합니다. Billing에서 충전하세요.";
+      throw new Error(m); }
+    return data;
+  }
+  // Fallback: direct call with the user's own key
+  if(!store.k) throw new Error("API 키가 없습니다. 설정에서 API 키를 입력하거나, 서버에 키를 설정한 뒤 접속 비밀번호를 넣으세요.");
   const res=await fetch("https://api.anthropic.com/v1/messages",{
     method:"POST",
     headers:{"content-type":"application/json","x-api-key":store.k,
       "anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
-    body:JSON.stringify({model:store.model,max_tokens:4000,system,
-      messages:[{role:"user",content:userMsg}],
-      output_config:{format:{type:"json_schema",schema}}})
+    body:JSON.stringify(body)
   });
   if(!res.ok){
     let msg="API 오류 "+res.status;
@@ -754,7 +779,13 @@ async function callClaude(system, userMsg, schema){
     if(res.status===400 && /credit|balance/i.test(msg)) msg="크레딧이 부족합니다. console.anthropic.com → Billing에서 충전하세요.";
     throw new Error(msg);
   }
-  const data=await res.json();
+  return res.json();
+}
+async function callClaude(system, userMsg, schema){
+  const body={model:store.model,max_tokens:4000,system,
+    messages:[{role:"user",content:userMsg}],
+    output_config:{format:{type:"json_schema",schema}}};
+  const data=await anthropicRaw(body);
   if(data.stop_reason==="refusal") throw new Error("모델이 이 요청을 거부했습니다. 내용을 확인해 주세요.");
   const tb=(data.content||[]).find(b=>b.type==="text");
   if(!tb) throw new Error("응답을 해석할 수 없습니다.");
@@ -781,7 +812,7 @@ function buildSchema(scoreKeys){
       structureFeedback:{type:"string"},modelAnswer:{type:"string"},nextFocus:{type:"string"}}};
 }
 $("feedbackBtn").onclick=async()=>{
-  if(!store.k){ $("settingsCard").classList.remove("hidden"); showFb("err","먼저 설정에서 API 키를 입력하세요."); return; }
+  if(!store.k && !store.passcode){ $("settingsCard").classList.remove("hidden"); showFb("err","먼저 설정에서 API 키 또는 접속 비밀번호를 입력하세요."); return; }
   const answer=(state.finalText||"").trim();
   if(answer.length<2){ showFb("err","답변 내용이 없습니다."); return; }
   const btn=$("feedbackBtn"); btn.disabled=true;
@@ -897,7 +928,7 @@ function mockSchema(){
     }};
 }
 async function runMockScore(){
-  if(!store.k){ $("settingsCard").classList.remove("hidden"); showFb("err","먼저 설정에서 API 키를 입력하세요."); return; }
+  if(!store.k && !store.passcode){ $("settingsCard").classList.remove("hidden"); showFb("err","먼저 설정에서 API 키 또는 접속 비밀번호를 입력하세요."); return; }
   $("mockScoreBtn").disabled=true;
   $("fbTitle").textContent="📊 모의고사 채점 결과";
   $("feedbackCard").classList.remove("hidden");
