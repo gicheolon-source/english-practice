@@ -729,17 +729,25 @@ $("randomBtn").onclick=()=>{
 };
 
 // ================== 질문 TTS ==================
-$("ttsBtn").onclick=()=>{
-  if(!state.question) return;
-  speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(state.question); u.lang="en-US"; u.rate=0.95;
+let ttsState=null;
+function ttsStop(){ try{speechSynthesis.cancel();}catch(e){} if(ttsState){ ttsState.btn.textContent=ttsState.playLabel; ttsState=null; } }
+function ttsToggle(text, btn, playLabel, rate){
+  if(!text) return;
+  if(ttsState && ttsState.btn===btn){ ttsStop(); return; }  // 재생 중 같은 버튼 → 정지
+  ttsStop();
+  const u=new SpeechSynthesisUtterance(text); u.lang="en-US"; u.rate=rate||0.97;
   const v=speechSynthesis.getVoices().find(v=>/en-US/i.test(v.lang)); if(v) u.voice=v;
+  const done=()=>{ if(ttsState && ttsState.btn===btn){ btn.textContent=playLabel; ttsState=null; } };
+  u.onend=done; u.onerror=done;
+  ttsState={btn, playLabel}; btn.textContent="⏹ 정지";
   speechSynthesis.speak(u);
-};
+}
+$("ttsBtn").onclick=()=>ttsToggle(state.question, $("ttsBtn"), "🔊 질문 듣기", 0.95);
 
 // ================== 녹음 + 인식 ==================
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 function resetAnswer(){
+  ttsStop();
   state.finalText=""; state.committed=""; state.sessionFinal=""; state.duration=0; state.chunks=[];
   if(state.timerId){ clearInterval(state.timerId); }
   state.typing=false;
@@ -980,7 +988,7 @@ function renderFeedback(fb, modeId){
   if(fb.nextFocus)
     html+=`<div class="fb-section"><h3>🎯 다음 연습 포인트</h3><div>${escapeHtml(fb.nextFocus)}</div></div>`;
   $("feedbackBody").innerHTML=html;
-  const sm=$("speakModel"); if(sm) sm.onclick=()=>{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(fb.modelAnswer);u.lang="en-US";u.rate=0.98;speechSynthesis.speak(u);};
+  const sm=$("speakModel"); if(sm) sm.onclick=()=>ttsToggle(fb.modelAnswer, sm, "🔊 모범답안 듣기", 0.98);
 }
 
 // ================== 모의고사 ==================
