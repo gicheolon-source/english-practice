@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPIc IH 스피킹 트레이너</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --panel:#ffffff; --ink:#1a1d24; --sub:#5b6472;
+    --line:#e4e7ec; --accent:#2f6df6; --accent-ink:#fff;
+    --red:#e5484d; --red-bg:#fdecec; --green:#2f9e44; --green-bg:#e9f7ee;
+    --amber:#e8a33d; --amber-bg:#fdf3e3; --chip:#eef1f5;
+    --shadow:0 1px 3px rgba(0,0,0,.06),0 6px 24px rgba(0,0,0,.05);
+    --radius:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f1115; --panel:#171a21; --ink:#e8ebf0; --sub:#9aa4b2;
+      --line:#262b34; --accent:#5b8cff; --accent-ink:#0b1220;
+      --red:#ff6b6f; --red-bg:#2a1517; --green:#4ade80; --green-bg:#13251a;
+      --amber:#f0b054; --amber-bg:#2a2113; --chip:#20242c;
+      --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#f6f7f9; --panel:#ffffff; --ink:#1a1d24; --sub:#5b6472;
+    --line:#e4e7ec; --accent:#2f6df6; --accent-ink:#fff;
+    --red:#e5484d; --red-bg:#fdecec; --green:#2f9e44; --green-bg:#e9f7ee;
+    --amber:#e8a33d; --amber-bg:#fdf3e3; --chip:#eef1f5;
+  }
+  :root[data-theme="dark"]{
+    --bg:#0f1115; --panel:#171a21; --ink:#e8ebf0; --sub:#9aa4b2;
+    --line:#262b34; --accent:#5b8cff; --accent-ink:#0b1220;
+    --red:#ff6b6f; --red-bg:#2a1517; --green:#4ade80; --green-bg:#13251a;
+    --amber:#f0b054; --amber-bg:#2a2113; --chip:#20242c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:880px;margin:0 auto;padding:20px 16px 80px}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+  .logo{font-weight:800;font-size:20px;letter-spacing:-.02em}
+  .badge{background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:12px;
+    padding:3px 9px;border-radius:999px}
+  .spacer{flex:1}
+  .icon-btn{background:var(--panel);border:1px solid var(--line);color:var(--ink);
+    border-radius:10px;padding:8px 12px;font-size:13px;cursor:pointer;font-weight:600}
+  .icon-btn:hover{border-color:var(--accent)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px;box-shadow:var(--shadow);margin-bottom:16px}
+  h2{font-size:15px;margin:0 0 12px;letter-spacing:-.01em}
+  label{font-size:13px;color:var(--sub);font-weight:600;display:block;margin-bottom:6px}
+  input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);
+    color:var(--ink);border-radius:10px;padding:10px 12px;font-size:14px;font-family:inherit}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:transparent}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .row>div{flex:1;min-width:160px}
+  .muted{color:var(--sub);font-size:12.5px}
+  .hidden{display:none!important}
+  /* category chips */
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .chip{background:var(--chip);border:1px solid transparent;color:var(--ink);
+    border-radius:999px;padding:7px 13px;font-size:13px;cursor:pointer;font-weight:600}
+  .chip.active{background:var(--accent);color:var(--accent-ink)}
+  .q-list{display:flex;flex-direction:column;gap:8px}
+  .q-item{background:var(--bg);border:1px solid var(--line);border-radius:10px;
+    padding:12px 14px;cursor:pointer;font-size:14px}
+  .q-item:hover{border-color:var(--accent)}
+  .q-item.active{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+  .q-item .qtype{font-size:11px;opacity:.7;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+  /* practice */
+  .question-box{font-size:17px;font-weight:600;line-height:1.5;margin:6px 0 14px}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .btn{border:none;border-radius:11px;padding:12px 18px;font-size:14.5px;font-weight:700;
+    cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+  .btn-primary{background:var(--accent);color:var(--accent-ink)}
+  .btn-rec{background:var(--red);color:#fff}
+  .btn-rec.recording{animation:pulse 1.4s infinite}
+  .btn-ghost{background:var(--chip);color:var(--ink)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(229,72,77,.5)}50%{box-shadow:0 0 0 10px rgba(229,72,77,0)}}
+  .timer{font-variant-numeric:tabular-nums;font-weight:800;font-size:20px;letter-spacing:.02em}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--red);display:inline-block}
+  .transcript{background:var(--bg);border:1px dashed var(--line);border-radius:10px;
+    padding:14px;min-height:80px;font-size:15px;white-space:pre-wrap}
+  .transcript .interim{color:var(--sub)}
+  audio{width:100%;margin-top:10px}
+  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:10px;margin-top:12px}
+  .metric{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
+  .metric .num{font-size:20px;font-weight:800;line-height:1.1}
+  .metric .lab{font-size:11px;color:var(--sub);margin-top:2px}
+  /* feedback */
+  .lvl-hero{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .lvl-badge{font-size:34px;font-weight:900;background:var(--accent);color:var(--accent-ink);
+    border-radius:14px;padding:10px 20px;letter-spacing:-.02em}
+  .scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin:14px 0}
+  .score .bar{height:7px;background:var(--chip);border-radius:99px;overflow:hidden;margin-top:5px}
+  .score .fill{height:100%;background:var(--accent);border-radius:99px}
+  .score .lab{font-size:12px;color:var(--sub);display:flex;justify-content:space-between}
+  .fb-section{margin-top:16px}
+  .fb-section h3{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:7px}
+  .corr{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px}
+  .corr .before{color:var(--red);text-decoration:line-through;text-decoration-color:var(--red)}
+  .corr .after{color:var(--green);font-weight:600}
+  .corr .note{font-size:12.5px;color:var(--sub);margin-top:5px}
+  .up{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px}
+  .up b{color:var(--accent)}
+  .model-ans{background:var(--green-bg);border:1px solid var(--line);border-radius:10px;padding:14px;
+    font-size:15px;line-height:1.7}
+  ul.clean{margin:0;padding-left:18px}
+  ul.clean li{margin-bottom:5px}
+  .banner{border-radius:10px;padding:12px 14px;font-size:13.5px;margin-bottom:12px}
+  .banner.err{background:var(--red-bg);color:var(--red);border:1px solid var(--red)}
+  .banner.warn{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber)}
+  .banner.info{background:var(--chip);color:var(--sub)}
+  .spinner{width:18px;height:18px;border:2.5px solid var(--chip);border-top-color:var(--accent);
+    border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:-3px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .hist-item{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 13px;
+    margin-bottom:8px;font-size:13px;display:flex;gap:10px;align-items:center;cursor:pointer}
+  .hist-item:hover{border-color:var(--accent)}
+  .hist-lvl{font-weight:800;color:var(--accent);min-width:34px}
+  .link{color:var(--accent);cursor:pointer;font-weight:600}
+  code{background:var(--chip);padding:1px 5px;border-radius:5px;font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="logo">OPIc 스피킹 트레이너</span>
+    <span class="badge">IH · 4-4 목표</span>
+    <span class="spacer"></span>
+    <button class="icon-btn" id="themeBtn" title="테마">🌓</button>
+    <button class="icon-btn" id="settingsBtn">⚙️ 설정</button>
+  </header>
+
+  <!-- SETTINGS -->
+  <div class="card hidden" id="settingsCard">
+    <h2>설정</h2>
+    <div class="banner info" style="margin-bottom:14px">
+      API 키는 이 브라우저(localStorage)에만 저장되고 <b>Anthropic 외 어디로도 전송되지 않습니다.</b>
+      키 발급: <span class="muted">console.anthropic.com → API Keys</span>
+    </div>
+    <div class="row">
+      <div>
+        <label>Anthropic API 키</label>
+        <input id="apiKey" type="password" placeholder="sk-ant-...">
+      </div>
+      <div style="max-width:230px">
+        <label>모델</label>
+        <select id="model">
+          <option value="claude-sonnet-5">Sonnet 5 (추천 · 빠르고 저렴)</option>
+          <option value="claude-opus-5">Opus 5 (가장 정교)</option>
+          <option value="claude-haiku-4-5">Haiku 4.5 (초저가·빠른 점검)</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:12px" class="row">
+      <div style="max-width:230px">
+        <label>피드백 언어</label>
+        <select id="fbLang">
+          <option value="ko">한국어 설명 + 영어 교정</option>
+          <option value="en">All English</option>
+        </select>
+      </div>
+      <div style="max-width:180px">
+        <label>준비 시간</label>
+        <select id="prepTime">
+          <option value="0">없음 (실전)</option>
+          <option value="15">15초</option>
+          <option value="30">30초</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:10px">
+      <button class="btn btn-primary" id="saveSettings">저장</button>
+      <span class="muted" id="saveMsg"></span>
+    </div>
+  </div>
+
+  <!-- QUESTION PICKER -->
+  <div class="card">
+    <h2>1. 질문 선택</h2>
+    <div class="chips" id="catChips"></div>
+    <div class="q-list" id="qList"></div>
+    <div style="margin-top:12px">
+      <button class="btn btn-ghost" id="randomBtn">🎲 랜덤 콤보 (실전처럼)</button>
+    </div>
+  </div>
+
+  <!-- PRACTICE -->
+  <div class="card" id="practiceCard">
+    <h2>2. 답변 녹음</h2>
+    <div class="muted" id="qType" style="text-transform:uppercase;letter-spacing:.05em;font-weight:700;font-size:11px"></div>
+    <div class="question-box" id="questionText">위에서 질문을 선택하세요.</div>
+    <div class="controls">
+      <button class="btn btn-ghost" id="ttsBtn">🔊 질문 듣기</button>
+      <button class="btn btn-rec" id="recBtn" disabled><span class="dot"></span> 녹음 시작</button>
+      <span class="timer" id="timer">00:00</span>
+      <span class="muted" id="prepMsg"></span>
+    </div>
+    <div style="margin-top:14px">
+      <label>전사 (자동)</label>
+      <div class="transcript" id="transcript"><span class="muted">녹음을 시작하면 말한 내용이 여기에 실시간으로 나타납니다. 끝나면 직접 수정도 가능해요.</span></div>
+      <textarea id="transcriptEdit" class="hidden" rows="5"></textarea>
+      <audio id="audioPlayer" controls class="hidden"></audio>
+    </div>
+    <div class="metrics" id="metrics"></div>
+    <div style="margin-top:16px">
+      <button class="btn btn-primary" id="feedbackBtn" disabled>✨ AI 첨삭 받기</button>
+      <span class="muted" id="fbCost"></span>
+    </div>
+  </div>
+
+  <!-- FEEDBACK -->
+  <div class="card hidden" id="feedbackCard">
+    <h2>3. AI 첨삭</h2>
+    <div id="feedbackBody"></div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="card">
+    <h2>📈 연습 기록</h2>
+    <div id="histList"><span class="muted">아직 기록이 없습니다.</span></div>
+  </div>
+</div>
+
+<script>
+// ---------- OPIc IH 질문 은행 ----------
+const BANK = {
+  "자기소개": [
+    {t:"Self-Intro", q:"Let's start the interview now. Tell me a little about yourself."},
+    {t:"Self-Intro", q:"Tell me about your daily routine on a typical weekday. What do you usually do from morning to night?"},
+    {t:"Self-Intro", q:"You indicated that you are a student / employed. Tell me about where you study or work and what you do there."},
+  ],
+  "묘사·설명": [
+    {t:"Description", q:"Describe the place where you live. What does it look like, and which room is your favorite? Why?"},
+    {t:"Description", q:"You said you like going to cafés. Describe your favorite café — what it looks like, the atmosphere, and what you usually order."},
+    {t:"Description", q:"Tell me about a park you often go to. Describe what it looks like and what people usually do there."},
+    {t:"Description", q:"Describe the kind of music you enjoy listening to and a singer or band you really like."},
+  ],
+  "습관·경향": [
+    {t:"Habit", q:"How often do you watch movies, and where do you usually watch them? Walk me through what you typically do before, during, and after watching a movie."},
+    {t:"Habit", q:"You said you like to exercise. What do you usually do to stay healthy? Describe your typical exercise routine from start to finish."},
+    {t:"Habit", q:"Tell me about how you usually spend your free time on the weekend. What do you like to do and who do you do it with?"},
+    {t:"Habit", q:"How do you usually use the internet? What websites or apps do you visit, and what do you do on them?"},
+  ],
+  "과거 경험": [
+    {t:"Past Experience", q:"Tell me about a memorable trip you took. Where did you go, who did you go with, and what made it so memorable? Give me all the details."},
+    {t:"Past Experience", q:"Think about a movie you watched recently that left a strong impression. Tell me about the movie and why it stayed with you."},
+    {t:"Past Experience", q:"Describe a time when something unexpected happened while you were traveling or on a trip. What happened and how did you handle it?"},
+    {t:"Past Experience", q:"Tell me about the most memorable concert or live performance you have ever been to. Describe the experience in detail."},
+  ],
+  "비교": [
+    {t:"Comparison", q:"How has the way people watch movies changed over the years? Compare how it was in the past with how it is today."},
+    {t:"Comparison", q:"Compare a café you used to go to when you were younger with a café you go to now. How are they different?"},
+    {t:"Comparison", q:"Think about how people exercise these days compared to the past. What has changed, and what do you think about these changes?"},
+  ],
+  "롤플레이": [
+    {t:"Role-Play · Ask", q:"I also like going to the movies. Ask me three or four questions about my movie-watching habits."},
+    {t:"Role-Play · Problem", q:"You planned to meet a friend at a café, but you're going to be 30 minutes late. Call your friend, explain the situation, and suggest a solution."},
+    {t:"Role-Play · Situation", q:"You bought a ticket for a concert but suddenly can't go. Call the ticket office, explain your situation, and ask what options you have."},
+    {t:"Role-Play · Ask", q:"I hear you're planning a trip. I've been to that place before. Ask me three or four questions to get information for your trip."},
+  ],
+  "고난도·이슈": [
+    {t:"Advanced Issue", q:"Some people say streaming services have changed the film industry for the better, while others disagree. What is your opinion, and why?"},
+    {t:"Advanced Issue", q:"Tell me about an issue or problem related to travel that many people are concerned about these days. Why is it a problem, and what could be done about it?"},
+    {t:"Advanced Issue", q:"Many people struggle to balance work or study with staying healthy. Why do you think this is difficult, and what are some ways to deal with it?"},
+    {t:"Advanced Issue", q:"How do you think technology has changed the way people spend their free time? Talk about both the positive and negative sides."},
+  ],
+};
+
+// ---------- 상태 ----------
+let state = { question:null, qtype:null, recognizing:false, finalText:"",
+  recStart:0, duration:0, timerId:null, recognition:null, mediaRecorder:null,
+  chunks:[], audioURL:null, prepId:null };
+
+const $ = id => document.getElementById(id);
+const store = {
+  get k(){return localStorage.getItem("opic_key")||""},
+  set k(v){localStorage.setItem("opic_key",v)},
+  get model(){return localStorage.getItem("opic_model")||"claude-sonnet-5"},
+  set model(v){localStorage.setItem("opic_model",v)},
+  get fbLang(){return localStorage.getItem("opic_fblang")||"ko"},
+  set fbLang(v){localStorage.setItem("opic_fblang",v)},
+  get prep(){return localStorage.getItem("opic_prep")||"0"},
+  set prep(v){localStorage.setItem("opic_prep",v)},
+  get theme(){return localStorage.getItem("opic_theme")||""},
+  set theme(v){localStorage.setItem("opic_theme",v)},
+  get hist(){try{return JSON.parse(localStorage.getItem("opic_hist")||"[]")}catch(e){return[]}},
+  set hist(v){localStorage.setItem("opic_hist",JSON.stringify(v.slice(0,30)))},
+};
+
+// ---------- 테마 ----------
+function applyTheme(){ if(store.theme) document.documentElement.setAttribute("data-theme",store.theme); }
+$("themeBtn").onclick=()=>{
+  const cur=document.documentElement.getAttribute("data-theme");
+  const next = cur==="dark"?"light":(cur==="light"?"":"dark");
+  if(next) document.documentElement.setAttribute("data-theme",next);
+  else document.documentElement.removeAttribute("data-theme");
+  store.theme=next;
+};
+applyTheme();
+
+// ---------- 설정 UI ----------
+$("settingsBtn").onclick=()=>$("settingsCard").classList.toggle("hidden");
+function loadSettings(){
+  $("apiKey").value=store.k; $("model").value=store.model;
+  $("fbLang").value=store.fbLang; $("prepTime").value=store.prep;
+  if(!store.k) $("settingsCard").classList.remove("hidden");
+}
+$("saveSettings").onclick=()=>{
+  store.k=$("apiKey").value.trim(); store.model=$("model").value;
+  store.fbLang=$("fbLang").value; store.prep=$("prepTime").value;
+  $("saveMsg").textContent="✓ 저장됨"; setTimeout(()=>$("saveMsg").textContent="",2000);
+  updateFbCost();
+};
+loadSettings();
+
+// ---------- 질문 은행 렌더 ----------
+const cats=Object.keys(BANK); let activeCat=cats[0];
+function renderChips(){
+  $("catChips").innerHTML="";
+  cats.forEach(c=>{
+    const el=document.createElement("div");
+    el.className="chip"+(c===activeCat?" active":""); el.textContent=c;
+    el.onclick=()=>{activeCat=c;renderChips();renderQList();};
+    $("catChips").appendChild(el);
+  });
+}
+function renderQList(){
+  $("qList").innerHTML="";
+  BANK[activeCat].forEach(item=>{
+    const el=document.createElement("div");
+    el.className="q-item"+(state.question===item.q?" active":"");
+    el.innerHTML=`<div class="qtype">${item.t}</div>${item.q}`;
+    el.onclick=()=>selectQuestion(item);
+    $("qList").appendChild(el);
+  });
+}
+function selectQuestion(item){
+  if(state.recognizing) stopRecording();
+  state.question=item.q; state.qtype=item.t;
+  $("questionText").textContent=item.q;
+  $("qType").textContent=item.t;
+  $("recBtn").disabled=false;
+  resetAnswer();
+  renderQList();
+  window.scrollTo({top:$("practiceCard").offsetTop-20,behavior:"smooth"});
+}
+$("randomBtn").onclick=()=>{
+  const all=[]; cats.forEach(c=>BANK[c].forEach(i=>all.push(i)));
+  selectQuestion(all[Math.floor(Math.random()*all.length)]);
+};
+renderChips(); renderQList();
+
+// ---------- 질문 TTS ----------
+$("ttsBtn").onclick=()=>{
+  if(!state.question) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(state.question);
+  u.lang="en-US"; u.rate=0.95;
+  const v=speechSynthesis.getVoices().find(v=>/en-US/i.test(v.lang));
+  if(v) u.voice=v;
+  speechSynthesis.speak(u);
+};
+
+// ---------- 녹음 + 음성인식 ----------
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+function resetAnswer(){
+  state.finalText=""; state.duration=0; state.chunks=[];
+  if(state.audioURL){URL.revokeObjectURL(state.audioURL);state.audioURL=null;}
+  $("transcript").classList.remove("hidden");
+  $("transcript").innerHTML='<span class="muted">녹음을 시작하면 말한 내용이 실시간으로 나타납니다.</span>';
+  $("transcriptEdit").classList.add("hidden"); $("transcriptEdit").value="";
+  $("audioPlayer").classList.add("hidden"); $("audioPlayer").src="";
+  $("timer").textContent="00:00"; $("metrics").innerHTML="";
+  $("feedbackBtn").disabled=true; $("feedbackCard").classList.add("hidden");
+  $("prepMsg").textContent="";
+}
+function fmt(s){const m=Math.floor(s/60),ss=s%60;return String(m).padStart(2,"0")+":"+String(ss).padStart(2,"0");}
+
+$("recBtn").onclick=()=>{ state.recognizing ? stopRecording() : beginWithPrep(); };
+
+function beginWithPrep(){
+  const prep=parseInt(store.prep||"0",10);
+  if(prep>0){
+    let left=prep;
+    $("prepMsg").textContent=`준비 ${left}초...`;
+    $("recBtn").disabled=true;
+    state.prepId=setInterval(()=>{
+      left--; $("prepMsg").textContent=left>0?`준비 ${left}초...`:"";
+      if(left<=0){clearInterval(state.prepId);$("recBtn").disabled=false;startRecording();}
+    },1000);
+  } else startRecording();
+}
+
+async function startRecording(){
+  if(!SR){ showErr("이 브라우저는 음성인식을 지원하지 않습니다. 크롬(Chrome)에서 열어주세요."); return; }
+  resetAnswer();
+  // 오디오 녹음 (재생용)
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    state.mediaRecorder=new MediaRecorder(stream);
+    state.chunks=[];
+    state.mediaRecorder.ondataavailable=e=>{if(e.data.size>0)state.chunks.push(e.data);};
+    state.mediaRecorder.onstop=()=>{
+      const blob=new Blob(state.chunks,{type:state.chunks[0]?.type||"audio/webm"});
+      state.audioURL=URL.createObjectURL(blob);
+      const a=$("audioPlayer"); a.src=state.audioURL; a.classList.remove("hidden");
+      stream.getTracks().forEach(t=>t.stop());
+    };
+    state.mediaRecorder.start();
+  }catch(e){ /* 마이크 녹음 실패해도 인식은 시도 */ }
+
+  // 음성 인식
+  const rec=new SR();
+  rec.lang="en-US"; rec.continuous=true; rec.interimResults=true;
+  rec.onresult=e=>{
+    let interim="";
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const tr=e.results[i][0].transcript;
+      if(e.results[i].isFinal) state.finalText+=tr+" ";
+      else interim+=tr;
+    }
+    $("transcript").innerHTML = escapeHtml(state.finalText)+'<span class="interim">'+escapeHtml(interim)+'</span>';
+  };
+  rec.onerror=e=>{ if(e.error==="not-allowed"||e.error==="service-not-allowed")
+      showErr("마이크 접근이 거부되었습니다. 주소창의 자물쇠 아이콘에서 마이크를 허용하고, 가능하면 <code>http://localhost</code> 로 여세요."); };
+  rec.onend=()=>{ if(state.recognizing){ try{rec.start();}catch(e){} } }; // 자동 이어붙임
+  state.recognition=rec;
+  try{rec.start();}catch(e){}
+
+  state.recognizing=true; state.recStart=Date.now();
+  $("recBtn").innerHTML='<span class="dot"></span> 녹음 종료';
+  $("recBtn").classList.add("recording");
+  state.timerId=setInterval(()=>{ $("timer").textContent=fmt(Math.floor((Date.now()-state.recStart)/1000)); },250);
+}
+
+function stopRecording(){
+  if(state.prepId) clearInterval(state.prepId);
+  state.recognizing=false;
+  state.duration=Math.max(1,Math.round((Date.now()-state.recStart)/1000));
+  clearInterval(state.timerId);
+  if(state.recognition){ try{state.recognition.stop();}catch(e){} }
+  if(state.mediaRecorder&&state.mediaRecorder.state!=="inactive"){ try{state.mediaRecorder.stop();}catch(e){} }
+  $("recBtn").innerHTML='<span class="dot"></span> 녹음 시작';
+  $("recBtn").classList.remove("recording");
+  $("timer").textContent=fmt(state.duration);
+  // 편집 가능 전사로 전환
+  setTimeout(()=>{
+    const txt=state.finalText.trim();
+    $("transcript").classList.add("hidden");
+    const ta=$("transcriptEdit"); ta.classList.remove("hidden");
+    ta.value=txt; ta.oninput=()=>{state.finalText=ta.value;computeMetrics();};
+    computeMetrics();
+    $("feedbackBtn").disabled = txt.length<2;
+    if(txt.length<2) showWarn("전사된 내용이 거의 없습니다. 마이크 권한을 확인하거나, 텍스트 박스에 직접 입력한 뒤 첨삭받으세요.");
+  },400);
+}
+
+// ---------- 지표 (키 불필요) ----------
+const FILLERS=["um","uh","erm","hmm","like","you know","i mean","actually","basically","kind of","sort of"];
+const CONNECTORS=["because","so","however","although","but","and then","first","then","finally","for example","also","therefore","while","since","in addition","on the other hand"];
+function computeMetrics(){
+  const raw=(state.finalText||"").trim();
+  const words=raw.split(/\s+/).filter(Boolean);
+  const wc=words.length;
+  const low=" "+raw.toLowerCase()+" ";
+  let fillers=0; FILLERS.forEach(f=>{ fillers+=(low.match(new RegExp("\\b"+f.replace(/ /g,"\\s+")+"\\b","g"))||[]).length; });
+  let connectors=0; CONNECTORS.forEach(c=>{ connectors+=(low.match(new RegExp("\\b"+c.replace(/ /g,"\\s+")+"\\b","g"))||[]).length; });
+  const sentences=raw.split(/[.!?]+/).filter(s=>s.trim().length>0).length || (wc>0?1:0);
+  const uniq=new Set(words.map(w=>w.toLowerCase().replace(/[^a-z']/g,""))).size;
+  const wpm=state.duration>0?Math.round(wc/(state.duration/60)):0;
+  const m=[
+    {num:wc,lab:"단어 수"},
+    {num:fmt(state.duration),lab:"말한 시간"},
+    {num:wpm,lab:"WPM (속도)"},
+    {num:sentences,lab:"문장 수"},
+    {num:connectors,lab:"연결어",good:connectors>=4},
+    {num:fillers,lab:"군더더기",bad:fillers>=6},
+    {num:uniq,lab:"어휘 다양성"},
+  ];
+  $("metrics").innerHTML=m.map(x=>`<div class="metric"><div class="num" style="${x.bad?'color:var(--red)':x.good?'color:var(--green)':''}">${x.num}</div><div class="lab">${x.lab}</div></div>`).join("");
+}
+
+// ---------- AI 첨삭 ----------
+const SCHEMA={
+  type:"object",additionalProperties:false,
+  required:["estimatedLevel","levelComment","scores","strengths","corrections","vocabUpgrades","structureFeedback","modelAnswer","nextFocus"],
+  properties:{
+    estimatedLevel:{type:"string",description:"One of: NL, NM, NH, IL, IM, IH, AL"},
+    levelComment:{type:"string"},
+    scores:{type:"object",additionalProperties:false,
+      required:["fluency","grammar","vocabulary","coherence","taskCompletion"],
+      properties:{fluency:{type:"integer"},grammar:{type:"integer"},vocabulary:{type:"integer"},coherence:{type:"integer"},taskCompletion:{type:"integer"}}},
+    strengths:{type:"array",items:{type:"string"}},
+    corrections:{type:"array",items:{type:"object",additionalProperties:false,required:["original","improved","note"],
+      properties:{original:{type:"string"},improved:{type:"string"},note:{type:"string"}}}},
+    vocabUpgrades:{type:"array",items:{type:"object",additionalProperties:false,required:["basic","better","note"],
+      properties:{basic:{type:"string"},better:{type:"string"},note:{type:"string"}}}},
+    structureFeedback:{type:"string"},
+    modelAnswer:{type:"string"},
+    nextFocus:{type:"string"}
+  }
+};
+
+function buildSystem(){
+  const langRule = store.fbLang==="ko"
+    ? "Write levelComment, all 'note' fields, every item in strengths, structureFeedback, and nextFocus in KOREAN so the learner understands. Keep 'improved', 'better', and modelAnswer in natural spoken ENGLISH."
+    : "Write everything in English.";
+  return `You are an expert OPIc (Oral Proficiency Interview – computer) rater and English speaking coach, calibrated to the ACTFL proficiency scale. The test-taker is a Korean native speaker targeting IH (Intermediate High), i.e. OPIc level 4-4.
+
+You are given ONE interview question and a transcript of the spoken answer. The transcript is auto-generated from speech recognition, so IGNORE missing punctuation, capitalization, and obvious mis-transcriptions of homophones — judge the underlying spoken language, not the transcription.
+
+Evaluate strictly but encouragingly against IH criteria:
+- IH = handles most situations with ease and confidence; narrates and describes in past/present/future with good control; can handle a complication; connected, paragraph-length discourse; a range of connectors; some errors but they don't obscure meaning.
+- Do NOT inflate the level. If the answer is short, list-like, or stays in one tense, it is likely IM or below — say so.
+
+Give:
+1. estimatedLevel — realistic ACTFL level.
+2. scores — integers 1-10 for fluency, grammar, vocabulary, coherence, taskCompletion.
+3. strengths — 2-3 concrete things done well.
+4. corrections — up to 6 of the most useful fixes. 'original' = the learner's phrase (from the transcript), 'improved' = the natural corrected version, 'note' = why.
+5. vocabUpgrades — 3-4 places to swap a basic word/phrase for a more IH-level natural one.
+6. structureFeedback — feedback on answer organization, tense consistency, connectors, and whether the task was fully addressed (for role-plays: did they actually ask/solve? for comparison: did they truly compare?).
+7. modelAnswer — a realistic, ACHIEVABLE IH-level spoken answer to the same question. Natural conversational English (not literary), ~45-70 seconds when spoken, using clear structure and connectors. It should sound like a strong human test-taker, not a native essay.
+8. nextFocus — the single most important thing to work on next.
+
+${langRule}`;
+}
+
+function showErr(html){ prependBanner("err",html); }
+function showWarn(html){ prependBanner("warn",html); }
+function prependBanner(cls,html){
+  const b=document.createElement("div"); b.className="banner "+cls; b.innerHTML=html;
+  $("feedbackBody").innerHTML=""; $("feedbackCard").classList.remove("hidden");
+  $("feedbackBody").appendChild(b);
+  window.scrollTo({top:$("feedbackCard").offsetTop-20,behavior:"smooth"});
+}
+
+$("feedbackBtn").onclick=async()=>{
+  if(!store.k){ $("settingsCard").classList.remove("hidden"); showErr("먼저 설정에서 API 키를 입력하세요."); return; }
+  const answer=(state.finalText||"").trim();
+  if(answer.length<2){ showErr("답변 내용이 없습니다."); return; }
+  const btn=$("feedbackBtn"); btn.disabled=true;
+  $("feedbackCard").classList.remove("hidden");
+  $("feedbackBody").innerHTML='<div class="banner info"><span class="spinner"></span> AI가 답변을 분석하고 있습니다... (10~30초)</div>';
+  window.scrollTo({top:$("feedbackCard").offsetTop-20,behavior:"smooth"});
+  const userMsg=`QUESTION:\n${state.question}\n\nQUESTION TYPE: ${state.qtype}\nSPEAKING TIME: ${state.duration}s\n\nTRANSCRIPT OF SPOKEN ANSWER:\n${answer}`;
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{
+        "content-type":"application/json",
+        "x-api-key":store.k,
+        "anthropic-version":"2023-06-01",
+        "anthropic-dangerous-direct-browser-access":"true"
+      },
+      body:JSON.stringify({
+        model:store.model, max_tokens:4000,
+        system:buildSystem(),
+        messages:[{role:"user",content:userMsg}],
+        output_config:{format:{type:"json_schema",schema:SCHEMA}}
+      })
+    });
+    if(!res.ok){
+      let msg="API 오류 "+res.status;
+      try{const j=await res.json(); msg=(j.error&&j.error.message)||msg;}catch(e){}
+      if(res.status===401) msg="API 키가 올바르지 않습니다. 설정을 확인하세요.";
+      if(res.status===429) msg="요청이 많습니다(rate limit). 잠시 후 다시 시도하세요.";
+      showErr(escapeHtml(msg)); btn.disabled=false; return;
+    }
+    const data=await res.json();
+    if(data.stop_reason==="refusal"){ showErr("모델이 이 요청을 거부했습니다. 답변 내용을 확인해 주세요."); btn.disabled=false; return; }
+    const textBlock=(data.content||[]).find(b=>b.type==="text");
+    if(!textBlock){ showErr("응답을 해석할 수 없습니다."); btn.disabled=false; return; }
+    let fb; try{ fb=JSON.parse(textBlock.text); }catch(e){ showErr("응답 파싱 실패. 다시 시도해 주세요."); btn.disabled=false; return; }
+    renderFeedback(fb);
+    saveHistory(fb);
+  }catch(e){
+    showErr("네트워크 오류: "+escapeHtml(e.message)+"<br><span class='muted'>브라우저 콘솔(F12)에서 CORS 오류가 보이면, 파일을 <code>http://localhost</code>로 여세요.</span>");
+    btn.disabled=false;
+  }
+  btn.disabled=false;
+};
+
+function scoreRow(lab,val){
+  return `<div class="score"><div class="lab"><span>${lab}</span><span>${val}/10</span></div><div class="bar"><div class="fill" style="width:${val*10}%"></div></div></div>`;
+}
+function renderFeedback(fb){
+  const s=fb.scores||{};
+  let html=`<div class="lvl-hero">
+    <div class="lvl-badge">${escapeHtml(fb.estimatedLevel||"?")}</div>
+    <div style="flex:1;min-width:200px"><div class="muted" style="font-weight:700;font-size:12px">추정 레벨 · 목표 IH</div>${escapeHtml(fb.levelComment||"")}</div>
+  </div>
+  <div class="scores">
+    ${scoreRow("유창성 Fluency",s.fluency||0)}
+    ${scoreRow("문법 Grammar",s.grammar||0)}
+    ${scoreRow("어휘 Vocabulary",s.vocabulary||0)}
+    ${scoreRow("응집성 Coherence",s.coherence||0)}
+    ${scoreRow("과제수행 Task",s.taskCompletion||0)}
+  </div>`;
+
+  if(fb.strengths&&fb.strengths.length){
+    html+=`<div class="fb-section"><h3>💪 잘한 점</h3><ul class="clean">${fb.strengths.map(x=>`<li>${escapeHtml(x)}</li>`).join("")}</ul></div>`;
+  }
+  if(fb.corrections&&fb.corrections.length){
+    html+=`<div class="fb-section"><h3>✏️ 문법·표현 교정</h3>${fb.corrections.map(c=>
+      `<div class="corr"><span class="before">${escapeHtml(c.original)}</span> → <span class="after">${escapeHtml(c.improved)}</span><div class="note">${escapeHtml(c.note)}</div></div>`).join("")}</div>`;
+  }
+  if(fb.vocabUpgrades&&fb.vocabUpgrades.length){
+    html+=`<div class="fb-section"><h3>⬆️ 어휘 업그레이드 (IH 표현)</h3>${fb.vocabUpgrades.map(v=>
+      `<div class="up"><b>${escapeHtml(v.better)}</b> <span class="muted">← ${escapeHtml(v.basic)}</span><div class="note" style="font-size:12.5px;color:var(--sub);margin-top:4px">${escapeHtml(v.note)}</div></div>`).join("")}</div>`;
+  }
+  if(fb.structureFeedback){
+    html+=`<div class="fb-section"><h3>🧩 구조·응집성</h3><div>${escapeHtml(fb.structureFeedback)}</div></div>`;
+  }
+  if(fb.modelAnswer){
+    html+=`<div class="fb-section"><h3>⭐ IH 모범 답안</h3><div class="model-ans">${escapeHtml(fb.modelAnswer)}</div>
+      <div style="margin-top:8px"><span class="link" id="speakModel">🔊 모범답안 듣기</span></div></div>`;
+  }
+  if(fb.nextFocus){
+    html+=`<div class="fb-section"><h3>🎯 다음 연습 포인트</h3><div>${escapeHtml(fb.nextFocus)}</div></div>`;
+  }
+  $("feedbackBody").innerHTML=html;
+  const sm=$("speakModel"); if(sm) sm.onclick=()=>{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(fb.modelAnswer); u.lang="en-US"; u.rate=0.98;
+    speechSynthesis.speak(u);
+  };
+}
+
+// ---------- 기록 ----------
+function saveHistory(fb){
+  const h=store.hist;
+  h.unshift({d:new Date().toLocaleString("ko-KR"),lvl:fb.estimatedLevel,q:state.question,type:state.qtype,fb,answer:state.finalText,dur:state.duration});
+  store.hist=h; renderHist();
+}
+function renderHist(){
+  const h=store.hist;
+  if(!h.length){ $("histList").innerHTML='<span class="muted">아직 기록이 없습니다.</span>'; return; }
+  $("histList").innerHTML=h.map((x,i)=>
+    `<div class="hist-item" data-i="${i}"><span class="hist-lvl">${escapeHtml(x.lvl||"?")}</span><div style="flex:1"><div>${escapeHtml((x.q||"").slice(0,70))}${(x.q||"").length>70?"…":""}</div><div class="muted">${escapeHtml(x.d||"")} · ${escapeHtml(x.type||"")}</div></div></div>`).join("");
+  [...$("histList").querySelectorAll(".hist-item")].forEach(el=>{
+    el.onclick=()=>{ const x=store.hist[+el.dataset.i]; if(!x)return;
+      state.question=x.q; state.qtype=x.type; state.finalText=x.answer||""; state.duration=x.dur||0;
+      $("questionText").textContent=x.q; $("qType").textContent=x.type;
+      renderFeedback(x.fb); $("feedbackCard").classList.remove("hidden");
+      window.scrollTo({top:$("feedbackCard").offsetTop-20,behavior:"smooth"});
+    };
+  });
+}
+renderHist();
+
+// ---------- 유틸 ----------
+function escapeHtml(s){return (s==null?"":String(s)).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function updateFbCost(){
+  const map={"claude-sonnet-5":"Sonnet 5 · 첨삭 1회 대략 ₩10~30","claude-opus-5":"Opus 5 · 첨삭 1회 대략 ₩40~90","claude-haiku-4-5":"Haiku 4.5 · 첨삭 1회 대략 ₩3~10"};
+  $("fbCost").textContent = map[store.model]||"";
+}
+updateFbCost();
+$("model")?.addEventListener("change",()=>{store.model=$("model").value;updateFbCost();});
+</script>
+</body>
+</html>
