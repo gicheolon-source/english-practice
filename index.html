@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OPIc IH 스피킹 트레이너</title>
+<title>영어 스피킹 트레이너</title>
 <style>
   :root{
     --bg:#f6f7f9; --panel:#ffffff; --ink:#1a1d24; --sub:#5b6472;
@@ -39,7 +39,7 @@
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
     line-height:1.6;-webkit-font-smoothing:antialiased}
   .wrap{max-width:880px;margin:0 auto;padding:20px 16px 80px}
-  header{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
   .logo{font-weight:800;font-size:20px;letter-spacing:-.02em}
   .badge{background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:12px;
     padding:3px 9px;border-radius:999px}
@@ -47,6 +47,12 @@
   .icon-btn{background:var(--panel);border:1px solid var(--line);color:var(--ink);
     border-radius:10px;padding:8px 12px;font-size:13px;cursor:pointer;font-weight:600}
   .icon-btn:hover{border-color:var(--accent)}
+  .modebar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+  .modetab{flex:1;min-width:130px;background:var(--panel);border:1px solid var(--line);
+    border-radius:12px;padding:11px 12px;cursor:pointer;text-align:center;font-weight:700;font-size:14px}
+  .modetab:hover{border-color:var(--accent)}
+  .modetab.active{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+  .modetab .sub{font-size:11px;font-weight:500;opacity:.78;margin-top:2px}
   .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
     padding:18px;box-shadow:var(--shadow);margin-bottom:16px}
   h2{font-size:15px;margin:0 0 12px;letter-spacing:-.01em}
@@ -58,7 +64,6 @@
   .row>div{flex:1;min-width:160px}
   .muted{color:var(--sub);font-size:12.5px}
   .hidden{display:none!important}
-  /* category chips */
   .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
   .chip{background:var(--chip);border:1px solid transparent;color:var(--ink);
     border-radius:999px;padding:7px 13px;font-size:13px;cursor:pointer;font-weight:600}
@@ -69,7 +74,6 @@
   .q-item:hover{border-color:var(--accent)}
   .q-item.active{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
   .q-item .qtype{font-size:11px;opacity:.7;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
-  /* practice */
   .question-box{font-size:17px;font-weight:600;line-height:1.5;margin:6px 0 14px}
   .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .btn{border:none;border-radius:11px;padding:12px 18px;font-size:14.5px;font-weight:700;
@@ -90,11 +94,10 @@
   .metric{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
   .metric .num{font-size:20px;font-weight:800;line-height:1.1}
   .metric .lab{font-size:11px;color:var(--sub);margin-top:2px}
-  /* feedback */
   .lvl-hero{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-  .lvl-badge{font-size:34px;font-weight:900;background:var(--accent);color:var(--accent-ink);
-    border-radius:14px;padding:10px 20px;letter-spacing:-.02em}
-  .scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin:14px 0}
+  .lvl-badge{font-size:30px;font-weight:900;background:var(--accent);color:var(--accent-ink);
+    border-radius:14px;padding:10px 18px;letter-spacing:-.02em;text-align:center}
+  .scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin:14px 0}
   .score .bar{height:7px;background:var(--chip);border-radius:99px;overflow:hidden;margin-top:5px}
   .score .fill{height:100%;background:var(--accent);border-radius:99px}
   .score .lab{font-size:12px;color:var(--sub);display:flex;justify-content:space-between}
@@ -120,7 +123,7 @@
   .hist-item{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 13px;
     margin-bottom:8px;font-size:13px;display:flex;gap:10px;align-items:center;cursor:pointer}
   .hist-item:hover{border-color:var(--accent)}
-  .hist-lvl{font-weight:800;color:var(--accent);min-width:34px}
+  .hist-lvl{font-weight:800;color:var(--accent);min-width:44px;font-size:12px}
   .link{color:var(--accent);cursor:pointer;font-weight:600}
   code{background:var(--chip);padding:1px 5px;border-radius:5px;font-size:12.5px}
 </style>
@@ -128,19 +131,22 @@
 <body>
 <div class="wrap">
   <header>
-    <span class="logo">OPIc 스피킹 트레이너</span>
-    <span class="badge">IH · 4-4 목표</span>
+    <span class="logo">영어 스피킹 트레이너</span>
+    <span class="badge" id="modeBadge">OPIc · IH</span>
     <span class="spacer"></span>
     <button class="icon-btn" id="themeBtn" title="테마">🌓</button>
     <button class="icon-btn" id="settingsBtn">⚙️ 설정</button>
   </header>
+
+  <!-- MODE SELECTOR -->
+  <div class="modebar" id="modeBar"></div>
 
   <!-- SETTINGS -->
   <div class="card hidden" id="settingsCard">
     <h2>설정</h2>
     <div class="banner info" style="margin-bottom:14px">
       API 키는 이 브라우저(localStorage)에만 저장되고 <b>Anthropic 외 어디로도 전송되지 않습니다.</b>
-      키 발급: <span class="muted">console.anthropic.com → API Keys</span>
+      키 발급·크레딧: <span class="muted">console.anthropic.com</span>
     </div>
     <div class="row">
       <div>
@@ -173,7 +179,7 @@
         </select>
       </div>
     </div>
-    <div style="margin-top:14px;display:flex;gap:10px">
+    <div style="margin-top:14px;display:flex;gap:10px;align-items:center">
       <button class="btn btn-primary" id="saveSettings">저장</button>
       <span class="muted" id="saveMsg"></span>
     </div>
@@ -181,11 +187,11 @@
 
   <!-- QUESTION PICKER -->
   <div class="card">
-    <h2>1. 질문 선택</h2>
+    <h2>1. 질문 선택 <span class="muted" id="modeHint"></span></h2>
     <div class="chips" id="catChips"></div>
     <div class="q-list" id="qList"></div>
     <div style="margin-top:12px">
-      <button class="btn btn-ghost" id="randomBtn">🎲 랜덤 콤보 (실전처럼)</button>
+      <button class="btn btn-ghost" id="randomBtn">🎲 랜덤 (실전처럼)</button>
     </div>
   </div>
 
@@ -202,12 +208,12 @@
     </div>
     <div style="margin-top:14px">
       <label>전사 (자동)</label>
-      <div class="transcript" id="transcript"><span class="muted">녹음을 시작하면 말한 내용이 여기에 실시간으로 나타납니다. 끝나면 직접 수정도 가능해요.</span></div>
+      <div class="transcript" id="transcript"><span class="muted">녹음을 시작하면 말한 내용이 실시간으로 나타납니다. 끝나면 직접 수정도 가능해요.</span></div>
       <textarea id="transcriptEdit" class="hidden" rows="5"></textarea>
       <audio id="audioPlayer" controls class="hidden"></audio>
     </div>
     <div class="metrics" id="metrics"></div>
-    <div style="margin-top:16px">
+    <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
       <button class="btn btn-primary" id="feedbackBtn" disabled>✨ AI 첨삭 받기</button>
       <span class="muted" id="fbCost"></span>
     </div>
@@ -227,72 +233,228 @@
 </div>
 
 <script>
-// ---------- OPIc IH 질문 은행 ----------
-const BANK = {
-  "자기소개": [
-    {t:"Self-Intro", q:"Let's start the interview now. Tell me a little about yourself."},
-    {t:"Self-Intro", q:"Tell me about your daily routine on a typical weekday. What do you usually do from morning to night?"},
-    {t:"Self-Intro", q:"You indicated that you are a student / employed. Tell me about where you study or work and what you do there."},
+// ================== 질문 은행 ==================
+const OPIC_BANK = {
+  "자기소개":[
+    {t:"Self-Intro",q:"Let's start the interview now. Tell me a little about yourself."},
+    {t:"Self-Intro",q:"Tell me about your daily routine on a typical weekday. What do you usually do from morning to night?"},
+    {t:"Self-Intro",q:"You indicated that you are a student / employed. Tell me about where you study or work and what you do there."},
   ],
-  "묘사·설명": [
-    {t:"Description", q:"Describe the place where you live. What does it look like, and which room is your favorite? Why?"},
-    {t:"Description", q:"You said you like going to cafés. Describe your favorite café — what it looks like, the atmosphere, and what you usually order."},
-    {t:"Description", q:"Tell me about a park you often go to. Describe what it looks like and what people usually do there."},
-    {t:"Description", q:"Describe the kind of music you enjoy listening to and a singer or band you really like."},
+  "묘사·설명":[
+    {t:"Description",q:"Describe the place where you live. What does it look like, and which room is your favorite? Why?"},
+    {t:"Description",q:"You said you like going to cafés. Describe your favorite café — what it looks like, the atmosphere, and what you usually order."},
+    {t:"Description",q:"Tell me about a park you often go to. Describe what it looks like and what people usually do there."},
+    {t:"Description",q:"Describe the kind of music you enjoy listening to and a singer or band you really like."},
   ],
-  "습관·경향": [
-    {t:"Habit", q:"How often do you watch movies, and where do you usually watch them? Walk me through what you typically do before, during, and after watching a movie."},
-    {t:"Habit", q:"You said you like to exercise. What do you usually do to stay healthy? Describe your typical exercise routine from start to finish."},
-    {t:"Habit", q:"Tell me about how you usually spend your free time on the weekend. What do you like to do and who do you do it with?"},
-    {t:"Habit", q:"How do you usually use the internet? What websites or apps do you visit, and what do you do on them?"},
+  "습관·경향":[
+    {t:"Habit",q:"How often do you watch movies, and where do you usually watch them? Walk me through what you typically do before, during, and after watching a movie."},
+    {t:"Habit",q:"You said you like to exercise. What do you usually do to stay healthy? Describe your typical exercise routine from start to finish."},
+    {t:"Habit",q:"Tell me about how you usually spend your free time on the weekend. What do you like to do and who do you do it with?"},
+    {t:"Habit",q:"How do you usually use the internet? What websites or apps do you visit, and what do you do on them?"},
   ],
-  "과거 경험": [
-    {t:"Past Experience", q:"Tell me about a memorable trip you took. Where did you go, who did you go with, and what made it so memorable? Give me all the details."},
-    {t:"Past Experience", q:"Think about a movie you watched recently that left a strong impression. Tell me about the movie and why it stayed with you."},
-    {t:"Past Experience", q:"Describe a time when something unexpected happened while you were traveling or on a trip. What happened and how did you handle it?"},
-    {t:"Past Experience", q:"Tell me about the most memorable concert or live performance you have ever been to. Describe the experience in detail."},
+  "과거 경험":[
+    {t:"Past Experience",q:"Tell me about a memorable trip you took. Where did you go, who did you go with, and what made it so memorable? Give me all the details."},
+    {t:"Past Experience",q:"Think about a movie you watched recently that left a strong impression. Tell me about the movie and why it stayed with you."},
+    {t:"Past Experience",q:"Describe a time when something unexpected happened while you were traveling or on a trip. What happened and how did you handle it?"},
+    {t:"Past Experience",q:"Tell me about the most memorable concert or live performance you have ever been to. Describe the experience in detail."},
   ],
-  "비교": [
-    {t:"Comparison", q:"How has the way people watch movies changed over the years? Compare how it was in the past with how it is today."},
-    {t:"Comparison", q:"Compare a café you used to go to when you were younger with a café you go to now. How are they different?"},
-    {t:"Comparison", q:"Think about how people exercise these days compared to the past. What has changed, and what do you think about these changes?"},
+  "비교":[
+    {t:"Comparison",q:"How has the way people watch movies changed over the years? Compare how it was in the past with how it is today."},
+    {t:"Comparison",q:"Compare a café you used to go to when you were younger with a café you go to now. How are they different?"},
+    {t:"Comparison",q:"Think about how people exercise these days compared to the past. What has changed, and what do you think about these changes?"},
   ],
-  "롤플레이": [
-    {t:"Role-Play · Ask", q:"I also like going to the movies. Ask me three or four questions about my movie-watching habits."},
-    {t:"Role-Play · Problem", q:"You planned to meet a friend at a café, but you're going to be 30 minutes late. Call your friend, explain the situation, and suggest a solution."},
-    {t:"Role-Play · Situation", q:"You bought a ticket for a concert but suddenly can't go. Call the ticket office, explain your situation, and ask what options you have."},
-    {t:"Role-Play · Ask", q:"I hear you're planning a trip. I've been to that place before. Ask me three or four questions to get information for your trip."},
+  "롤플레이":[
+    {t:"Role-Play · Ask",q:"I also like going to the movies. Ask me three or four questions about my movie-watching habits."},
+    {t:"Role-Play · Problem",q:"You planned to meet a friend at a café, but you're going to be 30 minutes late. Call your friend, explain the situation, and suggest a solution."},
+    {t:"Role-Play · Situation",q:"You bought a ticket for a concert but suddenly can't go. Call the ticket office, explain your situation, and ask what options you have."},
+    {t:"Role-Play · Ask",q:"I hear you're planning a trip. I've been to that place before. Ask me three or four questions to get information for your trip."},
   ],
-  "고난도·이슈": [
-    {t:"Advanced Issue", q:"Some people say streaming services have changed the film industry for the better, while others disagree. What is your opinion, and why?"},
-    {t:"Advanced Issue", q:"Tell me about an issue or problem related to travel that many people are concerned about these days. Why is it a problem, and what could be done about it?"},
-    {t:"Advanced Issue", q:"Many people struggle to balance work or study with staying healthy. Why do you think this is difficult, and what are some ways to deal with it?"},
-    {t:"Advanced Issue", q:"How do you think technology has changed the way people spend their free time? Talk about both the positive and negative sides."},
+  "고난도·이슈":[
+    {t:"Advanced Issue",q:"Some people say streaming services have changed the film industry for the better, while others disagree. What is your opinion, and why?"},
+    {t:"Advanced Issue",q:"Tell me about an issue or problem related to travel that many people are concerned about these days. Why is it a problem, and what could be done about it?"},
+    {t:"Advanced Issue",q:"Many people struggle to balance work or study with staying healthy. Why do you think this is difficult, and what are some ways to deal with it?"},
+    {t:"Advanced Issue",q:"How do you think technology has changed the way people spend their free time? Talk about both the positive and negative sides."},
   ],
 };
 
-// ---------- 상태 ----------
+const DAILY_BANK = {
+  "인사·스몰토크":[
+    {t:"Small Talk",q:"You just met someone new at a party. Introduce yourself and keep the small talk going for a bit."},
+    {t:"Small Talk",q:"A coworker asks, 'How was your weekend?' Answer naturally and ask them back."},
+    {t:"Small Talk",q:"You run into an old friend you haven't seen in a long time. Start a warm, friendly conversation."},
+  ],
+  "식당·카페":[
+    {t:"Ordering",q:"You're at a café. Order a drink and a snack, and ask one question about the menu."},
+    {t:"Complaint",q:"You're at a restaurant and your order came out wrong. Politely tell the server and ask them to fix it."},
+    {t:"Recommend",q:"Recommend your favorite restaurant to a friend and explain why they should try it."},
+  ],
+  "쇼핑":[
+    {t:"Shopping",q:"You're shopping for clothes. Ask a store employee for help finding your size and a different color."},
+    {t:"Returns",q:"You want to return something you bought online. Explain the situation to customer service and ask for a refund."},
+  ],
+  "길찾기·여행":[
+    {t:"Directions",q:"You're lost in a new city. Ask a stranger for directions to the nearest subway station."},
+    {t:"Hotel",q:"You're checking into a hotel. Check in and ask about breakfast time and the wifi password."},
+    {t:"Travel",q:"Tell a friend about your dream vacation — where you'd go and why."},
+  ],
+  "전화·예약":[
+    {t:"Phone",q:"Call a restaurant to make a dinner reservation for four people this Friday at 7 p.m."},
+    {t:"Reschedule",q:"Call to reschedule an appointment to a different day and apologize for the short notice."},
+  ],
+  "직장 대화":[
+    {t:"Work",q:"A colleague asks for your opinion on a new idea in a meeting. Share your thoughts clearly."},
+    {t:"Work",q:"You need to ask your manager for a day off next week. Make the request politely."},
+    {t:"Work",q:"Introduce yourself and your role to a new team member on your first call together."},
+  ],
+  "의견·토론":[
+    {t:"Opinion",q:"Do you think working from home is better than working in an office? Explain your opinion with reasons."},
+    {t:"Opinion",q:"What's a hobby you'd recommend to almost anyone, and why?"},
+    {t:"Opinion",q:"Talk about a movie or show you watched recently and whether you'd recommend it."},
+  ],
+};
+
+// 실제 제품·FAQ 원문을 여기에 채우면 모범답안이 브랜드 정확해집니다. (비어 있으면 일반 뷰티 CS 기준으로 코칭)
+const REJUALL_KNOWLEDGE = "";
+
+const REJUALL_BANK = {
+  "제품 소개":[
+    {t:"Intro",q:"A customer asks, 'What is this product and what does it do?' Introduce the product clearly in 30-45 seconds."},
+    {t:"Differentiation",q:"Explain what makes this product different from other similar products on the market."},
+    {t:"Live Selling",q:"Give a quick, engaging product intro as if you're on a TikTok live selling it right now."},
+  ],
+  "사용법":[
+    {t:"How-to",q:"Explain step by step how to use this product as part of a daily skincare routine."},
+    {t:"How-to",q:"A customer asks when and how often they should use it. Explain clearly and simply."},
+  ],
+  "고객 FAQ":[
+    {t:"FAQ",q:"A customer with sensitive skin asks whether it's safe for them. Respond helpfully and honestly."},
+    {t:"FAQ",q:"A customer asks how long it takes to see results. Answer honestly and set realistic expectations."},
+    {t:"FAQ",q:"A customer asks what the main ingredients are and why they matter. Explain in simple terms."},
+  ],
+  "이의 대응":[
+    {t:"Objection",q:"A customer says, 'It's too expensive.' Handle the objection persuasively but honestly."},
+    {t:"Objection",q:"A customer is worried it won't work for their skin type. Reassure them appropriately without overpromising."},
+  ],
+  "주문·배송 CS":[
+    {t:"CS",q:"A customer asks about shipping time and the return policy. Respond as friendly customer support."},
+    {t:"CS",q:"A customer's order arrived damaged. Apologize sincerely and explain how you'll resolve it."},
+  ],
+};
+
+// ================== 모드 정의 ==================
+const MODES = {
+  opic:{
+    label:"OPIc", sub:"IH · 시험대비", badge:"OPIc · IH",
+    hint:"OPIc IH 표준 질문",
+    bank:OPIC_BANK,
+    levelCaption:"추정 레벨 · 목표 IH",
+    modelTitle:"⭐ IH 모범 답안",
+    scoreKeys:[
+      {key:"fluency",label:"유창성 Fluency"},
+      {key:"grammar",label:"문법 Grammar"},
+      {key:"vocabulary",label:"어휘 Vocabulary"},
+      {key:"coherence",label:"응집성 Coherence"},
+      {key:"taskCompletion",label:"과제수행 Task"},
+    ],
+    system(lang){
+      const L = lang==="ko"
+        ? "Write levelComment, all 'note' fields, every item in strengths, structureFeedback, and nextFocus in KOREAN. Keep 'improved', 'better', and modelAnswer in natural spoken ENGLISH."
+        : "Write everything in English.";
+      return `You are an expert OPIc (Oral Proficiency Interview – computer) rater and English speaking coach, calibrated to the ACTFL proficiency scale. The test-taker is a Korean native speaker targeting IH (Intermediate High), i.e. OPIc level 4-4.
+
+You get ONE interview question and a speech-recognition transcript of the spoken answer. IGNORE missing punctuation, capitalization, and obvious mis-transcriptions — judge the underlying spoken language.
+
+Evaluate strictly but encouragingly against IH criteria (narrates/describes across time frames, connected paragraph-length discourse, handles a complication, range of connectors; errors don't obscure meaning). Do NOT inflate the level — short, list-like, or single-tense answers are usually IM or below.
+
+Return: estimatedLevel (realistic ACTFL level: NL/NM/NH/IL/IM/IH/AL); scores 1-10 for fluency, grammar, vocabulary, coherence, taskCompletion; 2-3 strengths; up to 6 corrections (original→improved with note); 3-4 vocabUpgrades; structureFeedback (organization, tense consistency, connectors, whether the task was fully done — for role-plays did they actually ask/solve; for comparison did they truly compare); a realistic ACHIEVABLE IH-level modelAnswer (~45-70s spoken, natural conversational English, clear structure and connectors); nextFocus (single most important thing).
+${L}`;
+    }
+  },
+  daily:{
+    label:"일상 회화", sub:"자연스러운 표현", badge:"일상 회화",
+    hint:"실생활 상황 회화",
+    bank:DAILY_BANK,
+    levelCaption:"회화 수준 (CEFR)",
+    modelTitle:"⭐ 자연스러운 모범 답변",
+    scoreKeys:[
+      {key:"fluency",label:"유창성 Fluency"},
+      {key:"grammar",label:"문법 Grammar"},
+      {key:"vocabulary",label:"어휘 Vocabulary"},
+      {key:"naturalness",label:"자연스러움 Natural"},
+      {key:"responsiveness",label:"상황대응 Response"},
+    ],
+    system(lang){
+      const L = lang==="ko"
+        ? "Write levelComment, all 'note' fields, every item in strengths, structureFeedback, and nextFocus in KOREAN. Keep 'improved', 'better', and modelAnswer in natural spoken ENGLISH."
+        : "Write everything in English.";
+      return `You are a friendly, encouraging everyday-English conversation coach for a Korean learner. This is NOT a formal exam — the goal is natural, confident, real-life spoken English.
+
+You get ONE everyday situation prompt and a speech-recognition transcript of the learner's spoken response. IGNORE transcription artifacts — judge the underlying spoken language.
+
+Coach for how a friendly native speaker would actually say it: natural phrasing, common collocations and idioms, appropriate politeness/register for the situation, and good back-and-forth (asking follow-up questions, reacting naturally). Reward warmth and natural flow over textbook perfection.
+
+Return: estimatedLevel (a CEFR estimate: A1/A2/B1/B2/C1); scores 1-10 for fluency, grammar, vocabulary, naturalness, responsiveness; 2-3 strengths; up to 6 corrections (original→improved with note — focus on what sounds unnatural, not tiny nitpicks); 3-4 vocabUpgrades (swap textbook wording for what natives actually say); structureFeedback (did the response fit the situation, right tone, natural flow, did they keep the conversation going); a natural spoken modelAnswer (how a friendly native would handle this situation, ~20-45s, casual and real); nextFocus.
+${L}`;
+    }
+  },
+  rejuall:{
+    label:"닥터 리쥬올", sub:"제품·FAQ 응대", badge:"닥터 리쥬올",
+    hint:"제품 설명 · 고객 응대",
+    bank:REJUALL_BANK,
+    levelCaption:"고객응대 준비도",
+    modelTitle:"⭐ 모범 응대/설명",
+    scoreKeys:[
+      {key:"fluency",label:"유창성 Fluency"},
+      {key:"grammar",label:"문법 Grammar"},
+      {key:"clarity",label:"명료성 Clarity"},
+      {key:"persuasiveness",label:"설득력 Persuade"},
+      {key:"accuracy",label:"정확성 Accuracy"},
+    ],
+    system(lang){
+      const L = lang==="ko"
+        ? "Write levelComment, all 'note' fields, every item in strengths, structureFeedback, and nextFocus in KOREAN. Keep 'improved', 'better', and modelAnswer in natural spoken ENGLISH."
+        : "Write everything in English.";
+      const kb = REJUALL_KNOWLEDGE.trim()
+        ? `\n\nPRODUCT / FAQ REFERENCE (treat as ground truth for accuracy; base the modelAnswer on these facts):\n${REJUALL_KNOWLEDGE.trim()}`
+        : `\n\nNo specific product facts were provided. Judge internal consistency and plausibility, keep the modelAnswer generic-but-strong, and in nextFocus remind the learner to insert real product details.`;
+      return `You are an English-communication coach for a Korean e-commerce seller (Dr. Rejuall brand) who sells beauty/skincare products globally, including on TikTok Shop. The learner practices explaining products and handling customer questions in English.
+
+You get ONE seller/customer-service scenario and a speech-recognition transcript of the learner's spoken response. IGNORE transcription artifacts.
+
+Coach for effective, trustworthy sales & customer-service English: clear and simple explanations, natural persuasive phrasing (benefit-focused, not hype), friendly professional tone, and correct handling of objections/FAQs. IMPORTANT: keep all claims responsible and cosmetic — never invent medical or exaggerated efficacy claims; if the learner made an unrealistic/medical claim, flag it.
+
+Return: estimatedLevel (a Korean readiness label: "초급"/"중급"/"상급"); scores 1-10 for fluency, grammar, clarity, persuasiveness, accuracy; 2-3 strengths; up to 6 corrections (original→improved with note); 3-4 vocabUpgrades (more natural, persuasive, professional phrasing / useful sales & CS expressions); structureFeedback (was the message clear and well-structured, right tone, did it actually address the customer's concern and move toward a sale/resolution); a strong spoken modelAnswer (natural, friendly, trustworthy English for this scenario, ~30-60s); nextFocus.${kb}
+${L}`;
+    }
+  },
+};
+
+// ================== 상태 ==================
+let currentModeId = "opic";
+let MODE = MODES[currentModeId];
 let state = { question:null, qtype:null, recognizing:false, finalText:"",
   recStart:0, duration:0, timerId:null, recognition:null, mediaRecorder:null,
   chunks:[], audioURL:null, prepId:null };
 
 const $ = id => document.getElementById(id);
 const store = {
-  get k(){return localStorage.getItem("opic_key")||""},
-  set k(v){localStorage.setItem("opic_key",v)},
-  get model(){return localStorage.getItem("opic_model")||"claude-sonnet-5"},
-  set model(v){localStorage.setItem("opic_model",v)},
-  get fbLang(){return localStorage.getItem("opic_fblang")||"ko"},
-  set fbLang(v){localStorage.setItem("opic_fblang",v)},
-  get prep(){return localStorage.getItem("opic_prep")||"0"},
-  set prep(v){localStorage.setItem("opic_prep",v)},
-  get theme(){return localStorage.getItem("opic_theme")||""},
-  set theme(v){localStorage.setItem("opic_theme",v)},
-  get hist(){try{return JSON.parse(localStorage.getItem("opic_hist")||"[]")}catch(e){return[]}},
-  set hist(v){localStorage.setItem("opic_hist",JSON.stringify(v.slice(0,30)))},
+  get k(){return localStorage.getItem("spk_key")||localStorage.getItem("opic_key")||""},
+  set k(v){localStorage.setItem("spk_key",v)},
+  get model(){return localStorage.getItem("spk_model")||"claude-sonnet-5"},
+  set model(v){localStorage.setItem("spk_model",v)},
+  get fbLang(){return localStorage.getItem("spk_fblang")||"ko"},
+  set fbLang(v){localStorage.setItem("spk_fblang",v)},
+  get prep(){return localStorage.getItem("spk_prep")||"0"},
+  set prep(v){localStorage.setItem("spk_prep",v)},
+  get mode(){return localStorage.getItem("spk_mode")||"opic"},
+  set mode(v){localStorage.setItem("spk_mode",v)},
+  get theme(){return localStorage.getItem("spk_theme")||localStorage.getItem("opic_theme")||""},
+  set theme(v){localStorage.setItem("spk_theme",v)},
+  get hist(){try{return JSON.parse(localStorage.getItem("spk_hist")||"[]")}catch(e){return[]}},
+  set hist(v){localStorage.setItem("spk_hist",JSON.stringify(v.slice(0,40)))},
 };
 
-// ---------- 테마 ----------
+// ================== 테마 ==================
 function applyTheme(){ if(store.theme) document.documentElement.setAttribute("data-theme",store.theme); }
 $("themeBtn").onclick=()=>{
   const cur=document.documentElement.getAttribute("data-theme");
@@ -303,7 +465,7 @@ $("themeBtn").onclick=()=>{
 };
 applyTheme();
 
-// ---------- 설정 UI ----------
+// ================== 설정 ==================
 $("settingsBtn").onclick=()=>$("settingsCard").classList.toggle("hidden");
 function loadSettings(){
   $("apiKey").value=store.k; $("model").value=store.model;
@@ -316,13 +478,40 @@ $("saveSettings").onclick=()=>{
   $("saveMsg").textContent="✓ 저장됨"; setTimeout(()=>$("saveMsg").textContent="",2000);
   updateFbCost();
 };
-loadSettings();
 
-// ---------- 질문 은행 렌더 ----------
-const cats=Object.keys(BANK); let activeCat=cats[0];
+// ================== 모드 바 ==================
+function renderModeBar(){
+  $("modeBar").innerHTML="";
+  Object.keys(MODES).forEach(id=>{
+    const m=MODES[id];
+    const el=document.createElement("div");
+    el.className="modetab"+(id===currentModeId?" active":"");
+    el.innerHTML=`${m.label}<div class="sub">${m.sub}</div>`;
+    el.onclick=()=>switchMode(id);
+    $("modeBar").appendChild(el);
+  });
+}
+function switchMode(id){
+  if(!MODES[id]) return;
+  if(state.recognizing) stopRecording();
+  currentModeId=id; MODE=MODES[id]; store.mode=id;
+  $("modeBadge").textContent=MODE.badge;
+  $("modeHint").textContent="· "+MODE.hint;
+  state.question=null; state.qtype=null;
+  $("questionText").textContent="위에서 질문을 선택하세요.";
+  $("qType").textContent=""; $("recBtn").disabled=true;
+  resetAnswer();
+  renderModeBar(); renderChips(); renderQList();
+}
+
+// ================== 질문 은행 ==================
+let activeCat=null;
+function cats(){ return Object.keys(MODE.bank); }
 function renderChips(){
+  const cs=cats();
+  if(!activeCat || !cs.includes(activeCat)) activeCat=cs[0];
   $("catChips").innerHTML="";
-  cats.forEach(c=>{
+  cs.forEach(c=>{
     const el=document.createElement("div");
     el.className="chip"+(c===activeCat?" active":""); el.textContent=c;
     el.onclick=()=>{activeCat=c;renderChips();renderQList();};
@@ -331,10 +520,10 @@ function renderChips(){
 }
 function renderQList(){
   $("qList").innerHTML="";
-  BANK[activeCat].forEach(item=>{
+  (MODE.bank[activeCat]||[]).forEach(item=>{
     const el=document.createElement("div");
     el.className="q-item"+(state.question===item.q?" active":"");
-    el.innerHTML=`<div class="qtype">${item.t}</div>${item.q}`;
+    el.innerHTML=`<div class="qtype">${item.t}</div>${escapeHtml(item.q)}`;
     el.onclick=()=>selectQuestion(item);
     $("qList").appendChild(el);
   });
@@ -345,17 +534,15 @@ function selectQuestion(item){
   $("questionText").textContent=item.q;
   $("qType").textContent=item.t;
   $("recBtn").disabled=false;
-  resetAnswer();
-  renderQList();
+  resetAnswer(); renderQList();
   window.scrollTo({top:$("practiceCard").offsetTop-20,behavior:"smooth"});
 }
 $("randomBtn").onclick=()=>{
-  const all=[]; cats.forEach(c=>BANK[c].forEach(i=>all.push(i)));
-  selectQuestion(all[Math.floor(Math.random()*all.length)]);
+  const all=[]; cats().forEach(c=>MODE.bank[c].forEach(i=>all.push(i)));
+  if(all.length) selectQuestion(all[Math.floor(Math.random()*all.length)]);
 };
-renderChips(); renderQList();
 
-// ---------- 질문 TTS ----------
+// ================== 질문 TTS ==================
 $("ttsBtn").onclick=()=>{
   if(!state.question) return;
   speechSynthesis.cancel();
@@ -366,7 +553,7 @@ $("ttsBtn").onclick=()=>{
   speechSynthesis.speak(u);
 };
 
-// ---------- 녹음 + 음성인식 ----------
+// ================== 녹음 + 음성인식 ==================
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 function resetAnswer(){
   state.finalText=""; state.duration=0; state.chunks=[];
@@ -382,28 +569,22 @@ function resetAnswer(){
 function fmt(s){const m=Math.floor(s/60),ss=s%60;return String(m).padStart(2,"0")+":"+String(ss).padStart(2,"0");}
 
 $("recBtn").onclick=()=>{ state.recognizing ? stopRecording() : beginWithPrep(); };
-
 function beginWithPrep(){
   const prep=parseInt(store.prep||"0",10);
   if(prep>0){
-    let left=prep;
-    $("prepMsg").textContent=`준비 ${left}초...`;
-    $("recBtn").disabled=true;
+    let left=prep; $("prepMsg").textContent=`준비 ${left}초...`; $("recBtn").disabled=true;
     state.prepId=setInterval(()=>{
       left--; $("prepMsg").textContent=left>0?`준비 ${left}초...`:"";
       if(left<=0){clearInterval(state.prepId);$("recBtn").disabled=false;startRecording();}
     },1000);
   } else startRecording();
 }
-
 async function startRecording(){
   if(!SR){ showErr("이 브라우저는 음성인식을 지원하지 않습니다. 크롬(Chrome)에서 열어주세요."); return; }
   resetAnswer();
-  // 오디오 녹음 (재생용)
   try{
     const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    state.mediaRecorder=new MediaRecorder(stream);
-    state.chunks=[];
+    state.mediaRecorder=new MediaRecorder(stream); state.chunks=[];
     state.mediaRecorder.ondataavailable=e=>{if(e.data.size>0)state.chunks.push(e.data);};
     state.mediaRecorder.onstop=()=>{
       const blob=new Blob(state.chunks,{type:state.chunks[0]?.type||"audio/webm"});
@@ -412,32 +593,25 @@ async function startRecording(){
       stream.getTracks().forEach(t=>t.stop());
     };
     state.mediaRecorder.start();
-  }catch(e){ /* 마이크 녹음 실패해도 인식은 시도 */ }
-
-  // 음성 인식
+  }catch(e){}
   const rec=new SR();
   rec.lang="en-US"; rec.continuous=true; rec.interimResults=true;
   rec.onresult=e=>{
     let interim="";
     for(let i=e.resultIndex;i<e.results.length;i++){
       const tr=e.results[i][0].transcript;
-      if(e.results[i].isFinal) state.finalText+=tr+" ";
-      else interim+=tr;
+      if(e.results[i].isFinal) state.finalText+=tr+" "; else interim+=tr;
     }
     $("transcript").innerHTML = escapeHtml(state.finalText)+'<span class="interim">'+escapeHtml(interim)+'</span>';
   };
   rec.onerror=e=>{ if(e.error==="not-allowed"||e.error==="service-not-allowed")
-      showErr("마이크 접근이 거부되었습니다. 주소창의 자물쇠 아이콘에서 마이크를 허용하고, 가능하면 <code>http://localhost</code> 로 여세요."); };
-  rec.onend=()=>{ if(state.recognizing){ try{rec.start();}catch(e){} } }; // 자동 이어붙임
-  state.recognition=rec;
-  try{rec.start();}catch(e){}
-
+      showErr("마이크 접근이 거부되었습니다. 주소창 자물쇠 아이콘에서 마이크를 허용하세요."); };
+  rec.onend=()=>{ if(state.recognizing){ try{rec.start();}catch(e){} } };
+  state.recognition=rec; try{rec.start();}catch(e){}
   state.recognizing=true; state.recStart=Date.now();
-  $("recBtn").innerHTML='<span class="dot"></span> 녹음 종료';
-  $("recBtn").classList.add("recording");
+  $("recBtn").innerHTML='<span class="dot"></span> 녹음 종료'; $("recBtn").classList.add("recording");
   state.timerId=setInterval(()=>{ $("timer").textContent=fmt(Math.floor((Date.now()-state.recStart)/1000)); },250);
 }
-
 function stopRecording(){
   if(state.prepId) clearInterval(state.prepId);
   state.recognizing=false;
@@ -445,10 +619,8 @@ function stopRecording(){
   clearInterval(state.timerId);
   if(state.recognition){ try{state.recognition.stop();}catch(e){} }
   if(state.mediaRecorder&&state.mediaRecorder.state!=="inactive"){ try{state.mediaRecorder.stop();}catch(e){} }
-  $("recBtn").innerHTML='<span class="dot"></span> 녹음 시작';
-  $("recBtn").classList.remove("recording");
+  $("recBtn").innerHTML='<span class="dot"></span> 녹음 시작'; $("recBtn").classList.remove("recording");
   $("timer").textContent=fmt(state.duration);
-  // 편집 가능 전사로 전환
   setTimeout(()=>{
     const txt=state.finalText.trim();
     $("transcript").classList.add("hidden");
@@ -460,13 +632,12 @@ function stopRecording(){
   },400);
 }
 
-// ---------- 지표 (키 불필요) ----------
+// ================== 지표 ==================
 const FILLERS=["um","uh","erm","hmm","like","you know","i mean","actually","basically","kind of","sort of"];
 const CONNECTORS=["because","so","however","although","but","and then","first","then","finally","for example","also","therefore","while","since","in addition","on the other hand"];
 function computeMetrics(){
   const raw=(state.finalText||"").trim();
-  const words=raw.split(/\s+/).filter(Boolean);
-  const wc=words.length;
+  const words=raw.split(/\s+/).filter(Boolean); const wc=words.length;
   const low=" "+raw.toLowerCase()+" ";
   let fillers=0; FILLERS.forEach(f=>{ fillers+=(low.match(new RegExp("\\b"+f.replace(/ /g,"\\s+")+"\\b","g"))||[]).length; });
   let connectors=0; CONNECTORS.forEach(c=>{ connectors+=(low.match(new RegExp("\\b"+c.replace(/ /g,"\\s+")+"\\b","g"))||[]).length; });
@@ -474,63 +645,30 @@ function computeMetrics(){
   const uniq=new Set(words.map(w=>w.toLowerCase().replace(/[^a-z']/g,""))).size;
   const wpm=state.duration>0?Math.round(wc/(state.duration/60)):0;
   const m=[
-    {num:wc,lab:"단어 수"},
-    {num:fmt(state.duration),lab:"말한 시간"},
-    {num:wpm,lab:"WPM (속도)"},
-    {num:sentences,lab:"문장 수"},
-    {num:connectors,lab:"연결어",good:connectors>=4},
-    {num:fillers,lab:"군더더기",bad:fillers>=6},
-    {num:uniq,lab:"어휘 다양성"},
+    {num:wc,lab:"단어 수"},{num:fmt(state.duration),lab:"말한 시간"},{num:wpm,lab:"WPM (속도)"},
+    {num:sentences,lab:"문장 수"},{num:connectors,lab:"연결어",good:connectors>=4},
+    {num:fillers,lab:"군더더기",bad:fillers>=6},{num:uniq,lab:"어휘 다양성"},
   ];
   $("metrics").innerHTML=m.map(x=>`<div class="metric"><div class="num" style="${x.bad?'color:var(--red)':x.good?'color:var(--green)':''}">${x.num}</div><div class="lab">${x.lab}</div></div>`).join("");
 }
 
-// ---------- AI 첨삭 ----------
-const SCHEMA={
-  type:"object",additionalProperties:false,
-  required:["estimatedLevel","levelComment","scores","strengths","corrections","vocabUpgrades","structureFeedback","modelAnswer","nextFocus"],
-  properties:{
-    estimatedLevel:{type:"string",description:"One of: NL, NM, NH, IL, IM, IH, AL"},
-    levelComment:{type:"string"},
-    scores:{type:"object",additionalProperties:false,
-      required:["fluency","grammar","vocabulary","coherence","taskCompletion"],
-      properties:{fluency:{type:"integer"},grammar:{type:"integer"},vocabulary:{type:"integer"},coherence:{type:"integer"},taskCompletion:{type:"integer"}}},
-    strengths:{type:"array",items:{type:"string"}},
-    corrections:{type:"array",items:{type:"object",additionalProperties:false,required:["original","improved","note"],
-      properties:{original:{type:"string"},improved:{type:"string"},note:{type:"string"}}}},
-    vocabUpgrades:{type:"array",items:{type:"object",additionalProperties:false,required:["basic","better","note"],
-      properties:{basic:{type:"string"},better:{type:"string"},note:{type:"string"}}}},
-    structureFeedback:{type:"string"},
-    modelAnswer:{type:"string"},
-    nextFocus:{type:"string"}
-  }
-};
-
-function buildSystem(){
-  const langRule = store.fbLang==="ko"
-    ? "Write levelComment, all 'note' fields, every item in strengths, structureFeedback, and nextFocus in KOREAN so the learner understands. Keep 'improved', 'better', and modelAnswer in natural spoken ENGLISH."
-    : "Write everything in English.";
-  return `You are an expert OPIc (Oral Proficiency Interview – computer) rater and English speaking coach, calibrated to the ACTFL proficiency scale. The test-taker is a Korean native speaker targeting IH (Intermediate High), i.e. OPIc level 4-4.
-
-You are given ONE interview question and a transcript of the spoken answer. The transcript is auto-generated from speech recognition, so IGNORE missing punctuation, capitalization, and obvious mis-transcriptions of homophones — judge the underlying spoken language, not the transcription.
-
-Evaluate strictly but encouragingly against IH criteria:
-- IH = handles most situations with ease and confidence; narrates and describes in past/present/future with good control; can handle a complication; connected, paragraph-length discourse; a range of connectors; some errors but they don't obscure meaning.
-- Do NOT inflate the level. If the answer is short, list-like, or stays in one tense, it is likely IM or below — say so.
-
-Give:
-1. estimatedLevel — realistic ACTFL level.
-2. scores — integers 1-10 for fluency, grammar, vocabulary, coherence, taskCompletion.
-3. strengths — 2-3 concrete things done well.
-4. corrections — up to 6 of the most useful fixes. 'original' = the learner's phrase (from the transcript), 'improved' = the natural corrected version, 'note' = why.
-5. vocabUpgrades — 3-4 places to swap a basic word/phrase for a more IH-level natural one.
-6. structureFeedback — feedback on answer organization, tense consistency, connectors, and whether the task was fully addressed (for role-plays: did they actually ask/solve? for comparison: did they truly compare?).
-7. modelAnswer — a realistic, ACHIEVABLE IH-level spoken answer to the same question. Natural conversational English (not literary), ~45-70 seconds when spoken, using clear structure and connectors. It should sound like a strong human test-taker, not a native essay.
-8. nextFocus — the single most important thing to work on next.
-
-${langRule}`;
+// ================== AI 첨삭 ==================
+function buildSchema(scoreKeys){
+  const props={},req=[];
+  scoreKeys.forEach(sk=>{props[sk.key]={type:"integer"};req.push(sk.key);});
+  return {type:"object",additionalProperties:false,
+    required:["estimatedLevel","levelComment","scores","strengths","corrections","vocabUpgrades","structureFeedback","modelAnswer","nextFocus"],
+    properties:{
+      estimatedLevel:{type:"string"}, levelComment:{type:"string"},
+      scores:{type:"object",additionalProperties:false,required:req,properties:props},
+      strengths:{type:"array",items:{type:"string"}},
+      corrections:{type:"array",items:{type:"object",additionalProperties:false,required:["original","improved","note"],
+        properties:{original:{type:"string"},improved:{type:"string"},note:{type:"string"}}}},
+      vocabUpgrades:{type:"array",items:{type:"object",additionalProperties:false,required:["basic","better","note"],
+        properties:{basic:{type:"string"},better:{type:"string"},note:{type:"string"}}}},
+      structureFeedback:{type:"string"}, modelAnswer:{type:"string"}, nextFocus:{type:"string"}
+    }};
 }
-
 function showErr(html){ prependBanner("err",html); }
 function showWarn(html){ prependBanner("warn",html); }
 function prependBanner(cls,html){
@@ -539,7 +677,6 @@ function prependBanner(cls,html){
   $("feedbackBody").appendChild(b);
   window.scrollTo({top:$("feedbackCard").offsetTop-20,behavior:"smooth"});
 }
-
 $("feedbackBtn").onclick=async()=>{
   if(!store.k){ $("settingsCard").classList.remove("hidden"); showErr("먼저 설정에서 API 키를 입력하세요."); return; }
   const answer=(state.finalText||"").trim();
@@ -548,21 +685,18 @@ $("feedbackBtn").onclick=async()=>{
   $("feedbackCard").classList.remove("hidden");
   $("feedbackBody").innerHTML='<div class="banner info"><span class="spinner"></span> AI가 답변을 분석하고 있습니다... (10~30초)</div>';
   window.scrollTo({top:$("feedbackCard").offsetTop-20,behavior:"smooth"});
-  const userMsg=`QUESTION:\n${state.question}\n\nQUESTION TYPE: ${state.qtype}\nSPEAKING TIME: ${state.duration}s\n\nTRANSCRIPT OF SPOKEN ANSWER:\n${answer}`;
+  const userMsg=`QUESTION:\n${state.question}\n\nSCENARIO TYPE: ${state.qtype}\nSPEAKING TIME: ${state.duration}s\n\nTRANSCRIPT OF SPOKEN ANSWER:\n${answer}`;
+  const modeAtSend=currentModeId, modeObj=MODE;
   try{
     const res=await fetch("https://api.anthropic.com/v1/messages",{
       method:"POST",
-      headers:{
-        "content-type":"application/json",
-        "x-api-key":store.k,
-        "anthropic-version":"2023-06-01",
-        "anthropic-dangerous-direct-browser-access":"true"
-      },
+      headers:{"content-type":"application/json","x-api-key":store.k,
+        "anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
       body:JSON.stringify({
         model:store.model, max_tokens:4000,
-        system:buildSystem(),
+        system:modeObj.system(store.fbLang),
         messages:[{role:"user",content:userMsg}],
-        output_config:{format:{type:"json_schema",schema:SCHEMA}}
+        output_config:{format:{type:"json_schema",schema:buildSchema(modeObj.scoreKeys)}}
       })
     });
     if(!res.ok){
@@ -570,6 +704,7 @@ $("feedbackBtn").onclick=async()=>{
       try{const j=await res.json(); msg=(j.error&&j.error.message)||msg;}catch(e){}
       if(res.status===401) msg="API 키가 올바르지 않습니다. 설정을 확인하세요.";
       if(res.status===429) msg="요청이 많습니다(rate limit). 잠시 후 다시 시도하세요.";
+      if(res.status===400 && /credit|balance/i.test(msg)) msg="크레딧이 부족합니다. console.anthropic.com → Billing에서 충전하세요.";
       showErr(escapeHtml(msg)); btn.disabled=false; return;
     }
     const data=await res.json();
@@ -577,91 +712,83 @@ $("feedbackBtn").onclick=async()=>{
     const textBlock=(data.content||[]).find(b=>b.type==="text");
     if(!textBlock){ showErr("응답을 해석할 수 없습니다."); btn.disabled=false; return; }
     let fb; try{ fb=JSON.parse(textBlock.text); }catch(e){ showErr("응답 파싱 실패. 다시 시도해 주세요."); btn.disabled=false; return; }
-    renderFeedback(fb);
-    saveHistory(fb);
+    renderFeedback(fb, modeAtSend);
+    saveHistory(fb, modeAtSend);
   }catch(e){
-    showErr("네트워크 오류: "+escapeHtml(e.message)+"<br><span class='muted'>브라우저 콘솔(F12)에서 CORS 오류가 보이면, 파일을 <code>http://localhost</code>로 여세요.</span>");
-    btn.disabled=false;
+    showErr("네트워크 오류: "+escapeHtml(e.message)+"<br><span class='muted'>콘솔(F12)에 CORS 오류가 보이면 <code>http://localhost</code> 또는 Vercel(https)에서 여세요.</span>");
+    btn.disabled=false; return;
   }
   btn.disabled=false;
 };
 
 function scoreRow(lab,val){
-  return `<div class="score"><div class="lab"><span>${lab}</span><span>${val}/10</span></div><div class="bar"><div class="fill" style="width:${val*10}%"></div></div></div>`;
+  val=Math.max(0,Math.min(10,val||0));
+  return `<div class="score"><div class="lab"><span>${escapeHtml(lab)}</span><span>${val}/10</span></div><div class="bar"><div class="fill" style="width:${val*10}%"></div></div></div>`;
 }
-function renderFeedback(fb){
-  const s=fb.scores||{};
+function renderFeedback(fb, modeId){
+  const m=MODES[modeId]||MODE; const s=fb.scores||{};
   let html=`<div class="lvl-hero">
     <div class="lvl-badge">${escapeHtml(fb.estimatedLevel||"?")}</div>
-    <div style="flex:1;min-width:200px"><div class="muted" style="font-weight:700;font-size:12px">추정 레벨 · 목표 IH</div>${escapeHtml(fb.levelComment||"")}</div>
+    <div style="flex:1;min-width:200px"><div class="muted" style="font-weight:700;font-size:12px">${escapeHtml(m.levelCaption)}</div>${escapeHtml(fb.levelComment||"")}</div>
   </div>
-  <div class="scores">
-    ${scoreRow("유창성 Fluency",s.fluency||0)}
-    ${scoreRow("문법 Grammar",s.grammar||0)}
-    ${scoreRow("어휘 Vocabulary",s.vocabulary||0)}
-    ${scoreRow("응집성 Coherence",s.coherence||0)}
-    ${scoreRow("과제수행 Task",s.taskCompletion||0)}
-  </div>`;
-
-  if(fb.strengths&&fb.strengths.length){
+  <div class="scores">${m.scoreKeys.map(sk=>scoreRow(sk.label,s[sk.key])).join("")}</div>`;
+  if(fb.strengths&&fb.strengths.length)
     html+=`<div class="fb-section"><h3>💪 잘한 점</h3><ul class="clean">${fb.strengths.map(x=>`<li>${escapeHtml(x)}</li>`).join("")}</ul></div>`;
-  }
-  if(fb.corrections&&fb.corrections.length){
+  if(fb.corrections&&fb.corrections.length)
     html+=`<div class="fb-section"><h3>✏️ 문법·표현 교정</h3>${fb.corrections.map(c=>
       `<div class="corr"><span class="before">${escapeHtml(c.original)}</span> → <span class="after">${escapeHtml(c.improved)}</span><div class="note">${escapeHtml(c.note)}</div></div>`).join("")}</div>`;
-  }
-  if(fb.vocabUpgrades&&fb.vocabUpgrades.length){
-    html+=`<div class="fb-section"><h3>⬆️ 어휘 업그레이드 (IH 표현)</h3>${fb.vocabUpgrades.map(v=>
+  if(fb.vocabUpgrades&&fb.vocabUpgrades.length)
+    html+=`<div class="fb-section"><h3>⬆️ 표현 업그레이드</h3>${fb.vocabUpgrades.map(v=>
       `<div class="up"><b>${escapeHtml(v.better)}</b> <span class="muted">← ${escapeHtml(v.basic)}</span><div class="note" style="font-size:12.5px;color:var(--sub);margin-top:4px">${escapeHtml(v.note)}</div></div>`).join("")}</div>`;
-  }
-  if(fb.structureFeedback){
-    html+=`<div class="fb-section"><h3>🧩 구조·응집성</h3><div>${escapeHtml(fb.structureFeedback)}</div></div>`;
-  }
-  if(fb.modelAnswer){
-    html+=`<div class="fb-section"><h3>⭐ IH 모범 답안</h3><div class="model-ans">${escapeHtml(fb.modelAnswer)}</div>
+  if(fb.structureFeedback)
+    html+=`<div class="fb-section"><h3>🧩 구조·전달력</h3><div>${escapeHtml(fb.structureFeedback)}</div></div>`;
+  if(fb.modelAnswer)
+    html+=`<div class="fb-section"><h3>${escapeHtml(m.modelTitle)}</h3><div class="model-ans">${escapeHtml(fb.modelAnswer)}</div>
       <div style="margin-top:8px"><span class="link" id="speakModel">🔊 모범답안 듣기</span></div></div>`;
-  }
-  if(fb.nextFocus){
+  if(fb.nextFocus)
     html+=`<div class="fb-section"><h3>🎯 다음 연습 포인트</h3><div>${escapeHtml(fb.nextFocus)}</div></div>`;
-  }
   $("feedbackBody").innerHTML=html;
   const sm=$("speakModel"); if(sm) sm.onclick=()=>{
     speechSynthesis.cancel();
-    const u=new SpeechSynthesisUtterance(fb.modelAnswer); u.lang="en-US"; u.rate=0.98;
-    speechSynthesis.speak(u);
+    const u=new SpeechSynthesisUtterance(fb.modelAnswer); u.lang="en-US"; u.rate=0.98; speechSynthesis.speak(u);
   };
 }
 
-// ---------- 기록 ----------
-function saveHistory(fb){
+// ================== 기록 ==================
+function saveHistory(fb, modeId){
   const h=store.hist;
-  h.unshift({d:new Date().toLocaleString("ko-KR"),lvl:fb.estimatedLevel,q:state.question,type:state.qtype,fb,answer:state.finalText,dur:state.duration});
+  h.unshift({d:new Date().toLocaleString("ko-KR"),mode:modeId,lvl:fb.estimatedLevel,q:state.question,type:state.qtype,fb,answer:state.finalText,dur:state.duration});
   store.hist=h; renderHist();
 }
 function renderHist(){
   const h=store.hist;
   if(!h.length){ $("histList").innerHTML='<span class="muted">아직 기록이 없습니다.</span>'; return; }
-  $("histList").innerHTML=h.map((x,i)=>
-    `<div class="hist-item" data-i="${i}"><span class="hist-lvl">${escapeHtml(x.lvl||"?")}</span><div style="flex:1"><div>${escapeHtml((x.q||"").slice(0,70))}${(x.q||"").length>70?"…":""}</div><div class="muted">${escapeHtml(x.d||"")} · ${escapeHtml(x.type||"")}</div></div></div>`).join("");
+  $("histList").innerHTML=h.map((x,i)=>{
+    const ml=(MODES[x.mode]&&MODES[x.mode].label)||"";
+    return `<div class="hist-item" data-i="${i}"><span class="hist-lvl">${escapeHtml(x.lvl||"?")}</span><div style="flex:1"><div>${escapeHtml((x.q||"").slice(0,66))}${(x.q||"").length>66?"…":""}</div><div class="muted">${escapeHtml(ml)} · ${escapeHtml(x.d||"")}</div></div></div>`;
+  }).join("");
   [...$("histList").querySelectorAll(".hist-item")].forEach(el=>{
     el.onclick=()=>{ const x=store.hist[+el.dataset.i]; if(!x)return;
-      state.question=x.q; state.qtype=x.type; state.finalText=x.answer||""; state.duration=x.dur||0;
+      state.question=x.q; state.qtype=x.type;
       $("questionText").textContent=x.q; $("qType").textContent=x.type;
-      renderFeedback(x.fb); $("feedbackCard").classList.remove("hidden");
+      renderFeedback(x.fb, x.mode); $("feedbackCard").classList.remove("hidden");
       window.scrollTo({top:$("feedbackCard").offsetTop-20,behavior:"smooth"});
     };
   });
 }
-renderHist();
 
-// ---------- 유틸 ----------
+// ================== 유틸 ==================
 function escapeHtml(s){return (s==null?"":String(s)).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function updateFbCost(){
   const map={"claude-sonnet-5":"Sonnet 5 · 첨삭 1회 대략 ₩10~30","claude-opus-5":"Opus 5 · 첨삭 1회 대략 ₩40~90","claude-haiku-4-5":"Haiku 4.5 · 첨삭 1회 대략 ₩3~10"};
   $("fbCost").textContent = map[store.model]||"";
 }
-updateFbCost();
 $("model")?.addEventListener("change",()=>{store.model=$("model").value;updateFbCost();});
+
+// ================== 초기화 ==================
+currentModeId = MODES[store.mode]?store.mode:"opic"; MODE=MODES[currentModeId];
+$("modeBadge").textContent=MODE.badge; $("modeHint").textContent="· "+MODE.hint;
+loadSettings(); renderModeBar(); renderChips(); renderQList(); renderHist(); updateFbCost();
 </script>
 </body>
 </html>
