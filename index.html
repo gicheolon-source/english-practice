@@ -686,21 +686,11 @@ function beginWithPrep(){
       if(left<=0){clearInterval(state.prepId);$("recBtn").disabled=false;startRecording();}},1000);
   } else startRecording();
 }
-async function startRecording(){
-  if(!SR){ showFb("err","이 브라우저는 음성인식을 지원하지 않습니다. 크롬(Chrome)에서 열어주세요."); return; }
+function startRecording(){
+  if(!SR){ showFb("err","이 브라우저는 음성인식을 지원하지 않습니다. 안드로이드 크롬·PC 크롬을 쓰거나 <b>✍️ 직접 입력</b>을 이용하세요."); return; }
   resetAnswer();
-  try{
-    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    state.mediaRecorder=new MediaRecorder(stream); state.chunks=[];
-    state.mediaRecorder.ondataavailable=e=>{if(e.data.size>0)state.chunks.push(e.data);};
-    state.mediaRecorder.onstop=()=>{
-      const blob=new Blob(state.chunks,{type:state.chunks[0]?.type||"audio/webm"});
-      state.audioURL=URL.createObjectURL(blob);
-      const a=$("audioPlayer"); a.src=state.audioURL; a.classList.remove("hidden");
-      stream.getTracks().forEach(t=>t.stop());
-    };
-    state.mediaRecorder.start();
-  }catch(e){}
+  state.recError=null;
+  // 음성인식만 단독 실행 (오디오 녹음과 동시에 돌리면 안드로이드에서 마이크 충돌로 전사가 실패함)
   const rec=new SR(); rec.lang="en-US"; rec.continuous=true; rec.interimResults=true;
   rec.onresult=e=>{
     let interim="";
@@ -710,10 +700,18 @@ async function startRecording(){
     }
     $("transcript").innerHTML=escapeHtml(state.finalText)+'<span class="interim">'+escapeHtml(interim)+'</span>';
   };
-  rec.onerror=e=>{ if(e.error==="not-allowed"||e.error==="service-not-allowed")
-      showFb("err","마이크 접근이 거부되었습니다. 주소창 자물쇠 아이콘에서 마이크를 허용하세요."); };
-  rec.onend=()=>{ if(state.recognizing){ try{rec.start();}catch(e){} } };
-  state.recognition=rec; try{rec.start();}catch(e){}
+  rec.onerror=e=>{ state.recError=e.error;
+    if(e.error==="not-allowed"||e.error==="service-not-allowed")
+      showFb("err","마이크 접근이 거부됐어요. 주소창 🔒 → 마이크 → 허용 후 다시 시도하세요.");
+    else if(e.error==="network")
+      showFb("warn","음성인식 서버 연결이 막혔어요(오프라인/방화벽). 인터넷 확인 후 다시 시도하거나 <b>✍️ 직접 입력</b>을 이용하세요.");
+    else if(e.error!=="no-speech" && e.error!=="aborted")
+      showFb("warn","전사 오류("+escapeHtml(e.error)+"). <b>✍️ 직접 입력</b>으로 받아쓰기를 이용하세요.");
+  };
+  // no-speech 등 일시적 종료는 이어서 재시작, 치명적 오류는 중단
+  rec.onend=()=>{ if(state.recognizing && state.recError!=="network" && state.recError!=="not-allowed" && state.recError!=="service-not-allowed"){ try{rec.start();}catch(e){} } };
+  state.recognition=rec;
+  try{ rec.start(); }catch(e){ showFb("err","녹음을 시작할 수 없어요: "+escapeHtml(e.message)); return; }
   state.recognizing=true; state.recStart=Date.now();
   $("recBtn").innerHTML='<span class="dot"></span> 녹음 종료'; $("recBtn").classList.add("recording");
   state.timerId=setInterval(()=>{ $("timer").textContent=fmt(Math.floor((Date.now()-state.recStart)/1000)); },250);
