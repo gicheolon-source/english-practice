@@ -249,6 +249,7 @@
     <div class="controls">
       <button class="btn btn-ghost" id="ttsBtn">🔊 질문 듣기</button>
       <button class="btn btn-rec" id="recBtn" disabled><span class="dot"></span> 녹음 시작</button>
+      <button class="btn btn-ghost" id="typeBtn" disabled title="아이폰 등 전사 안 될 때: 키보드 마이크로 받아쓰기">✍️ 직접 입력</button>
       <span class="timer" id="timer">00:00</span>
       <span class="muted" id="prepMsg"></span>
     </div>
@@ -580,7 +581,7 @@ function switchMode(id){
   if(id==='opic'){ refreshOpicBank(); $("opicTarget").value=opicTarget; }
   state.question=null; state.qtype=null;
   $("questionText").textContent="위에서 질문을 선택하세요."; $("qType").textContent="";
-  $("recBtn").disabled=true; resetAnswer();
+  $("recBtn").disabled=true; $("typeBtn").disabled=true; resetAnswer();
   activeCat=null; renderChips(); renderQList();
   $("fbTitle").textContent="3. AI 첨삭";
   updateModeUI();
@@ -632,7 +633,7 @@ function selectQuestion(item){
   if(state.recognizing) stopRecording();
   state.question=item.q; state.qtype=item.t;
   $("questionText").textContent=item.q; $("qType").textContent=item.t;
-  $("recBtn").disabled=false; resetAnswer(); renderQList();
+  $("recBtn").disabled=false; $("typeBtn").disabled=false; resetAnswer(); renderQList();
   window.scrollTo({top:$("practiceCard").offsetTop-20,behavior:"smooth"});
 }
 $("randomBtn").onclick=()=>{
@@ -662,6 +663,21 @@ function resetAnswer(){
   $("feedbackBtn").disabled=true; $("mockNextBtn").disabled=true; $("prepMsg").textContent="";
 }
 $("recBtn").onclick=()=>{ state.recognizing ? stopRecording() : beginWithPrep(); };
+$("typeBtn").onclick=()=>openTypeMode();
+function openTypeMode(){
+  if(state.recognizing) stopRecording();
+  $("transcript").classList.add("hidden");
+  const ta=$("transcriptEdit"); ta.classList.remove("hidden");
+  if(!ta.value) ta.value=state.finalText||"";
+  ta.oninput=()=>{ state.finalText=ta.value; computeMetrics(); refreshActionEnabled(); };
+  computeMetrics(); ta.focus();
+}
+function refreshActionEnabled(){
+  const ok=(state.finalText||"").trim().length>=2;
+  if(mock.active){ const last=mock.idx===mock.queue.length-1;
+    if(last) $("mockScoreBtn").disabled=!ok; else $("mockNextBtn").disabled=!ok; }
+  else $("feedbackBtn").disabled=!ok;
+}
 function beginWithPrep(){
   const prep=parseInt(store.prep||"0",10);
   if(prep>0){
@@ -886,7 +902,7 @@ function loadMockQuestion(){
   const item=mock.queue[mock.idx];
   state.question=item.q; state.qtype=item.type;
   $("questionText").textContent=item.q; $("qType").textContent=item.type;
-  $("recBtn").disabled=false; resetAnswer();
+  $("recBtn").disabled=false; $("typeBtn").disabled=false; resetAnswer();
   $("mockProg").textContent=`문제 ${mock.idx+1} / ${mock.queue.length}`;
   $("mockSection").textContent="· "+item.section;
   $("mockBar").style.width=(mock.idx/mock.queue.length*100)+"%";
