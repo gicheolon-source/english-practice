@@ -473,22 +473,107 @@ const DAILY_BANK = {
 };
 
 // ================== 닥터 리쥬올 ==================
-const REJUALL_KNOWLEDGE = ""; // 실제 제품·FAQ 원문을 여기에 넣으면 모범답안이 브랜드 정확해집니다.
+// 실제 제품·FAQ 사실(정답 기준). AI 모범답안·정확성 점수의 ground truth로 사용됨.
+// 출처: Dr.Reju-All Brand Intro + [US] Content Brief for US Affiliates.
+const REJUALL_KNOWLEDGE = `BRAND
+- Dr.Reju-All (by NeoSimplix). Tagline: "Rejuvenate from All Damage." A K-Pharmacy No.1, doctor- and pharmacist-led skincare brand built on real science, proven actives, and visible results.
+- Brand philosophy: Right Ingredients (chosen on research/stability data, not trends), Right Guidance (clear AM/PM, step order, what to expect), Right Results (formulas you can see/feel, backed by testing).
+- Signature ingredient across the line: medical-grade PDRN (ultra-refined 99% purity salmon DNA). Handle @rejuall_official. Hashtags #Dr.RejuAll #RejuAll.
+
+HERO / KEY PRODUCTS
+
+1) Advanced PDRN Rejuvenating Cream (20ml / 60ml) — the hero product
+- Pharmacy-grade regenerative gel-cream. Key actives: PDRN 1,200 ppm (99% purity salmon DNA, ultra-refined), Niacinamide 20,000 ppm, Panthenol 20,000 ppm, Hydrolyzed L-Collagen 20,000 ppm, Moisture-Repair Triple Complex.
+- Benefits: supports skin regeneration, barrier recovery, deep hydration; soothes irritation, reduces redness and post-blemish marks, supports faster recovery. Suitable for daily use incl. sensitive/compromised skin. Gel texture = fast, deep absorption, non-greasy cushioned finish.
+- Clinical (as tested): skin hydration +364% and soothing/redness +24% after one use.
+- How to use: after cleansing, AM or PM, in place of a serum/emulsion. Day = smooth, crease-free makeup base. Night = extra layer on dry areas.
+- Best angle: post-treatment recovery ("what I used after laser / microneedling to calm my skin").
+
+2) Advanced Retino-Mela Serum (30ml)
+- Brightening + skin-renewal serum. Actives: HPR 0.1% (next-generation retinoid), alpha-bisabolol, Niacinamide 10%, TXA (tranexamic acid).
+- HPR works directly (no conversion), ~30x more stable than retinol/retinal, ultra-low irritation, beginner-friendly. The 4 actives target melanin at every stage (formation, transfer, surface). For uneven tone, dullness, dark spots, fine lines.
+- How to use: PM after cleansing/toning; gentle enough for daily use; ALWAYS apply SPF in the day.
+- Best angle: "stop using unstable retinol/retinal if it irritated you" — a next-gen retinoid for wrinkles AND dark spots.
+
+3) Advanced LC-Ceramide Barrier Cream (50ml)
+- Barrier cream with patented long-chain Ceramide 1% that mimics the skin's own lipids; also beta-sitosterol, D-Panthenol, Niacinamide.
+- Reinforces/repairs the barrier, locks in moisture, calms sensitivity, lightweight & non-greasy. All skin types.
+- Clinical: skin blemishes -93% after 4 weeks; redness -55% after one use.
+- How to use: final step of the routine to lock in moisture, AM/PM; pair with the PDRN Cream for dry skin.
+- Best angle: "dull skin isn't a glow problem, it's a barrier problem" — repair -> hydration -> glow follows.
+
+4) Advanced PDRN Rejuvenating Lip Serum (10ml)
+- Multifunctional lip serum. Actives: Lipozomal/LipoZip PDRN (reverse-micelle, optimized for lip skin), Lactic Acid + hibiscus-derived AHA (gentle exfoliation), Allantoin, Tocopheryl Acetate, CPC, Glycyrrhetinic Acid. Paraben- and fragrance-free.
+- Restores the lip barrier, gentle exfoliation, 24h hydration, glow; non-sticky lightweight finish. Hygienic silicone donut-tip applicator; locking lid.
+- Clinical: lip texture +70%, hydration +54% after one use; 54% glow retention at 24h; firmness/volume +26%.
+- How to use: turn locking lid to ON before use, apply evenly, turn OFF and cap after. Daily as needed; night = generous layer as an overnight lip mask.
+- Best angle: "from dry to plump lips overnight?" / "salmon DNA for your lips?"
+
+5) Advanced PDRN Copper Peptide Serum (30ml)
+- Dual-action anti-aging serum: PDRN 1,200 ppm ("building blocks") + Copper Peptide 1,000 ppm / 1% ("builder", 99% purity in blue microcapsules that protect actives from oxidation until application), Multi-Peptide.
+- Improves firmness, elasticity, radiance; PDRN supports renewal, copper peptides support firmness. Lightweight, fast-absorbing, slight cooling.
+- How to use: after toner, apply and massage until the blue capsules melt in; for targeted care, layer the PDRN Cream on top.
+- Best angle: "not all peptides are equal" / "one serum, two powerhouse ingredients."
+
+6) Advanced PDRN Rejuvenating Mask (4ea; 1 sheet / 36ml)
+- Intensive emulsion sheet mask, 1,200 ppm Salmon PDRN, 2% Niacinamide, 2% Collagen, Hyaluronate, Advanced 6-Peptide Complex, 3-Centella + 4-TECA. Separate face AND neck sheets in one pack. Vegan-certified, biodegradable, non-comedogenic, German Derma certified.
+- Hydration recovery, barrier reinforcement, wrinkle care, radiance. Marketing line: "a whole tube of PDRN Cream packed into one sheet."
+- Clinical: smile lines +25%, radiance +41% after 2 weeks; soothing +24% after one use.
+- How to use: apply to face and neck for 10-20 min (do NOT discard the separate neck piece), then pat in remaining essence.
+- Best angle: "that viral PDRN cream is now a face mask."
+
+7) Advanced PDRN Hair Density Scalp Serum (15ml)
+- Multifunctional scalp serum: SOYACT 2%, PDRN 99%, Exo-prosome, EGF Peptide Complex, plant-based AHA (tartaric acid), Biotin, Rosemary/Panthenol, Menthyl Lactate. Transparent gel via a cooling metal-ball applicator; fragrance-free, non-greasy.
+- Advanced Triple Hair Cycle Care (protects growth/anagen, shortens regression/catagen, prevents extended rest/telogen): healthier scalp, stronger roots, less shedding, more density. Plant-derived, efficacy positioned comparable to Minoxidil, low irritation, can be combined with Minoxidil.
+- Clinical: scalp flaking +40% and hair shedding after brushing -60% after 4 weeks.
+- How to use: twist bottom cap to unlock, press top button to dispense, apply to scalp (hairline, part line) and massage in; twist to lock after use.
+- Best angle: "your scalp is skin too."
+
+COMPLIANCE — TikTok ad-safe language (ENFORCE in accuracy scoring; flag any violation the learner makes)
+- You CAN say: "gentle on my skin", "works well for sensitive skin", "my skin feels calmer / more hydrated", "lightweight, non-greasy texture", "easy to layer into my routine", "gives a healthy, natural glow", "linked on TikTok Shop". Honest reactions, real routines, natural lighting are encouraged.
+- Do NOT: suggest ingesting/misusing the product; use "miracle", "cure", or "guaranteed results"; claim instant, permanent, or dramatic transformations; use medical/prescription language such as "treats", "heals", "anti-aging"; over-edit or exaggerate before/after; and never say the word "Amazon".
+- Winning tone: educational, not salesy — show real application, explain why it makes sense, set realistic expectations. Make viewers feel informed, not pressured. Content that teaches outperforms content that oversells.`;
 const REJUALL_BANK = {
+  "브랜드 소개":[
+    {t:"Brand",q:"In 30-45 seconds, introduce Dr.Reju-All to a first-time shopper: who the brand is (K-pharmacy, doctor-led) and what it stands for."},
+    {t:"Brand",q:"A viewer asks, 'What makes Dr.Reju-All different from other K-beauty brands?' Explain the 'Right Ingredients, Right Guidance, Right Results' idea simply."},
+    {t:"Brand",q:"Explain what PDRN is and why it's Dr.Reju-All's signature ingredient, in plain language a beginner can understand."}],
   "제품 소개":[
-    {t:"Intro",q:"A customer asks, 'What is this product and what does it do?' Introduce the product clearly in 30-45 seconds."},
-    {t:"Differentiation",q:"Explain what makes this product different from other similar products on the market."},
-    {t:"Live Selling",q:"Give a quick, engaging product intro as if you're on a TikTok live selling it right now."}],
+    {t:"PDRN Cream",q:"Introduce the Advanced PDRN Rejuvenating Cream (the hero product): what it is, the 1,200 ppm PDRN, and who it's for. 30-45s."},
+    {t:"Copper Peptide",q:"Introduce the Advanced PDRN Copper Peptide Serum. Explain the PDRN + copper peptide 'building blocks and builder' idea and the blue capsule technology."},
+    {t:"Retino-Mela",q:"Introduce the Advanced Retino-Mela Serum. Explain HPR as a next-generation retinoid and why that matters for sensitive skin."},
+    {t:"Ceramide",q:"Introduce the Advanced LC-Ceramide Barrier Cream and explain why long-chain ceramides matter for the skin barrier."},
+    {t:"Lip Serum",q:"Introduce the Advanced PDRN Rejuvenating Lip Serum. Explain LipoZip PDRN and why lips need special care. 30s."},
+    {t:"Mask",q:"Introduce the Advanced PDRN Rejuvenating Mask and explain the face-and-neck sheets and 'a whole tube of PDRN cream in one sheet'."},
+    {t:"Scalp",q:"Introduce the Advanced PDRN Hair Density Scalp Serum and the idea that 'your scalp is skin too'. 30s."},
+    {t:"Live Selling",q:"Give a quick, engaging product intro as if you're on a TikTok live selling the PDRN Cream right now."}],
   "사용법":[
-    {t:"How-to",q:"Explain step by step how to use this product as part of a daily skincare routine."},
-    {t:"How-to",q:"A customer asks when and how often they should use it. Explain clearly and simply."}],
+    {t:"How-to",q:"Explain step by step how to use the PDRN Cream in a daily routine — day vs. night."},
+    {t:"How-to",q:"Explain how to use the Copper Peptide Serum: after toner, massaging until the blue capsules melt in, and layering the PDRN cream for targeted care."},
+    {t:"How-to",q:"Explain how to use the Retino-Mela Serum safely at night, including why sunscreen the next day matters."},
+    {t:"How-to",q:"Explain how to use the Lip Serum, including the locking-lid (ON/OFF) and using it as an overnight lip mask."},
+    {t:"How-to",q:"Explain how to use the PDRN Mask for face and neck, and remind the customer not to throw away the neck piece."},
+    {t:"How-to",q:"A customer asks where the Ceramide Barrier Cream fits in their routine. Explain that it's the final locking-in step."}],
   "고객 FAQ":[
-    {t:"FAQ",q:"A customer with sensitive skin asks whether it's safe for them. Respond helpfully and honestly."},
-    {t:"FAQ",q:"A customer asks how long it takes to see results. Answer honestly and set realistic expectations."},
-    {t:"FAQ",q:"A customer asks what the main ingredients are and why they matter. Explain in simple terms."}],
+    {t:"FAQ",q:"A customer with sensitive skin asks whether the PDRN Cream is safe for them. Respond helpfully and honestly."},
+    {t:"FAQ",q:"A customer asks, 'Salmon DNA — is that safe and what does it actually do?' Explain PDRN simply and reassuringly."},
+    {t:"FAQ",q:"A customer says retinol always irritates their skin and asks how HPR is different. Explain in simple terms."},
+    {t:"FAQ",q:"A customer asks how long it takes to see results from the cream. Answer honestly and set realistic expectations."},
+    {t:"FAQ",q:"A customer asks whether the scalp serum really works like Minoxidil. Answer carefully and honestly without overpromising."},
+    {t:"FAQ",q:"A customer asks if the products are fragrance-free and okay for sensitive skin. Answer based on the product facts."}],
+  "콘텐츠 훅·앵글":[
+    {t:"Hook",q:"Film a short TikTok hook using the angle 'What I used after laser / microneedling to calm my skin' for the PDRN Cream. Keep it honest and educational."},
+    {t:"Hook",q:"Use the angle 'Dull skin isn't a glow problem — it's a barrier problem' to talk about the LC-Ceramide Barrier Cream."},
+    {t:"Hook",q:"Use the angle 'From dry to plump lips overnight?' to introduce the PDRN Lip Serum."},
+    {t:"Hook",q:"Use the angle 'Not all peptides are equal' to explain the Copper Peptide Serum's blue capsules."},
+    {t:"Hook",q:"Use the angle 'Your scalp is skin too' to introduce the Hair Density Scalp Serum."}],
   "이의 대응":[
     {t:"Objection",q:"A customer says, 'It's too expensive.' Handle the objection persuasively but honestly."},
-    {t:"Objection",q:"A customer is worried it won't work for their skin type. Reassure them appropriately without overpromising."}],
+    {t:"Objection",q:"A customer is worried it won't work for their skin type. Reassure them appropriately without overpromising."},
+    {t:"Objection",q:"A viewer comments, 'This is just marketing, PDRN doesn't do anything.' Respond confidently but responsibly."}],
+  "규정 준수 (Ad-safe)":[
+    {t:"Compliance",q:"Describe how well the PDRN Cream calmed your skin WITHOUT using banned words like 'miracle', 'cure', 'heals', or 'guaranteed'. Keep it TikTok ad-safe."},
+    {t:"Compliance",q:"A new creator asks what they can and cannot say about the products on TikTok. Explain the ad-safe do's and don'ts clearly."}],
   "주문·배송 CS":[
     {t:"CS",q:"A customer asks about shipping time and the return policy. Respond as friendly customer support."},
     {t:"CS",q:"A customer's order arrived damaged. Apologize sincerely and explain how you'll resolve it."}],
