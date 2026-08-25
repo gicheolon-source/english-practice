@@ -134,6 +134,19 @@
   .hist-lvl{font-weight:800;color:var(--accent);min-width:44px;font-size:12px}
   .link{color:var(--accent);cursor:pointer;font-weight:600}
   code{background:var(--chip);padding:1px 5px;border-radius:5px;font-size:12.5px}
+  details{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:8px}
+  details>summary{cursor:pointer;font-weight:700;font-size:14.5px;list-style:none}
+  details>summary::-webkit-details-marker{display:none}
+  details>summary::before{content:"▸ ";color:var(--accent)}
+  details[open]>summary::before{content:"▾ "}
+  details[open]>summary{margin-bottom:10px}
+  .tmpl-step{margin:7px 0}
+  .tmpl-step b{color:var(--accent);font-size:12.5px}
+  .tmpl-en{display:block;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 11px;margin-top:3px;font-size:14px}
+  .chunks-wrap{margin-top:8px}
+  .chunk{display:inline-block;background:var(--chip);border-radius:7px;padding:4px 9px;margin:0 5px 5px 0;font-size:13px}
+  .tip{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin-bottom:8px;font-size:14px}
+  .tip b{color:var(--accent)}
 </style>
 </head>
 <body>
@@ -239,6 +252,12 @@
       </div>
       <div class="progbar"><div id="mockBar" style="width:0"></div></div>
     </div>
+  </div>
+
+  <!-- GUIDE (templates + tips) -->
+  <div class="card hidden" id="guideCard">
+    <h2>📚 오픽 가이드 <span class="muted">유형별 만능 템플릿 · 고득점 꿀팁</span></h2>
+    <div id="guideBody"></div>
   </div>
 
   <!-- PRACTICE / RECORDING (shared) -->
@@ -442,6 +461,21 @@ const OPIC_ADVANCED = [
   {t:"Advance", q:"Work-life balance is a common topic these days. Why do you think it's hard to achieve, and what can individuals and companies do about it?"},
 ];
 
+const OPIC_COMPARISON = [
+  {t:"Comparison", q:"How has the way people listen to music changed compared to the past?"},
+  {t:"Comparison", q:"Compare how people communicate with each other today with how they communicated in the past."},
+  {t:"Comparison", q:"How has shopping changed over the years? Compare the past and the present."},
+  {t:"Comparison", q:"Compare the cafés or restaurants of today with those from when you were younger."},
+  {t:"Comparison", q:"How has technology changed the way people work or study compared to the past?"},
+  {t:"Comparison", q:"Compare how people spend their free time now with how they used to spend it."},
+  {t:"Comparison", q:"How have smartphones changed daily life compared to before they existed?"},
+  {t:"Comparison", q:"Compare traveling today with traveling in the past. What has changed?"},
+  {t:"Comparison", q:"How has your neighborhood or city changed over the years?"},
+  {t:"Comparison", q:"Compare the way people exercise or stay healthy now with the past."},
+  {t:"Comparison", q:"How has watching movies or TV changed compared to when you were a child?"},
+  {t:"Comparison", q:"Compare how people keep in touch with friends now versus in the past."},
+];
+
 // ================== 일상 회화 ==================
 const DAILY_BANK = {
   "인사·스몰토크":[
@@ -617,6 +651,7 @@ ${langRule(lang)}`;
     }
   },
   mock:{ label:"OPIc 모의고사", sub:"실전 15문항", hint:"실전 모의고사", badge:"OPIc 모의고사", isMock:true },
+  guide:{ label:"📚 가이드", sub:"템플릿·꿀팁", hint:"유형별 템플릿 · 고득점 꿀팁", badge:"오픽 가이드", isGuide:true },
   daily:{
     label:"일상 회화", sub:"자연스러운 표현", hint:"실생활 상황 회화", badge:"일상 회화",
     bank:DAILY_BANK, levelCaption:"회화 수준 (CEFR)", modelTitle:"⭐ 자연스러운 모범 답변",
@@ -733,12 +768,14 @@ function renderModeBar(){
 }
 function updateModeUI(){
   const mockMode = currentModeId==='mock';
-  $("pickerCard").classList.toggle("hidden", mockMode);
+  const guideMode = currentModeId==='guide';
+  $("pickerCard").classList.toggle("hidden", mockMode||guideMode);
   $("mockCard").classList.toggle("hidden", !mockMode);
+  $("guideCard").classList.toggle("hidden", !guideMode);
   $("opicTargetWrap").classList.toggle("hidden", currentModeId!=='opic');
-  $("normalActions").classList.toggle("hidden", mockMode);
+  $("normalActions").classList.toggle("hidden", mockMode||guideMode);
   $("mockActions").classList.toggle("hidden", !mockMode);
-  $("practiceCard").classList.toggle("hidden", mockMode && !mock.active);
+  $("practiceCard").classList.toggle("hidden", (mockMode && !mock.active) || guideMode);
   $("practiceTitle").textContent = mockMode ? "모의고사 진행" : "2. 답변 녹음";
 }
 function switchMode(id){
@@ -749,6 +786,7 @@ function switchMode(id){
   $("modeHint").textContent = MODE.hint ? "· "+MODE.hint : "";
   renderModeBar();
   $("feedbackCard").classList.add("hidden");
+  if(id==='guide'){ updateModeUI(); return; }
   if(id==='mock'){ resetMock(); return; }
   if(id==='opic'){ refreshOpicBank(); $("opicTarget").value=opicTarget; }
   state.question=null; state.qtype=null;
@@ -767,6 +805,7 @@ function buildOpicBank(target){
   bank["서베이 콤보"]=flat(OPIC_SURVEY_COMBOS);
   bank["돌발 콤보"]=flat(OPIC_SURPRISE_COMBOS);
   bank["롤플레이"]=flat(OPIC_ROLEPLAY);
+  bank["비교"]=OPIC_COMPARISON.map(a=>({t:a.t,q:a.q}));
   if(target!=='im') bank["고난이도"]=OPIC_ADVANCED.map(a=>({t:a.t,q:a.q}));
   return bank;
 }
@@ -1214,7 +1253,81 @@ function renderHist(){
   });
 }
 
+// ================== 가이드 (템플릿 + 꿀팁) ==================
+const GUIDE_TEMPLATES=[
+  {type:"🗣️ 묘사 (Description)", when:"장소·사물·사람 묘사 (현재 시제)",
+   steps:[
+     {k:"도입", en:"Oh, [topic]? Sure, I'd love to talk about that."},
+     {k:"큰 그림 (무엇/어디)", en:"The place I go to the most is ~. It's located near ~."},
+     {k:"디테일 (모습/분위기)", en:"When you walk in, the first thing you notice is ~. It's really ~."},
+     {k:"개인적 느낌", en:"What I love about it is ~. It always makes me feel ~."},
+     {k:"마무리", en:"So yeah, that's basically ~."}],
+   chunks:["It's the kind of place where ~","cozy / spacious / lively","There's something about it that ~","if I had to describe it, ~"]},
+  {type:"🔁 습관·루틴 (Routine)", when:"반복 행동·일상 (현재 시제)",
+   steps:[
+     {k:"빈도", en:"I usually ~ about twice a week."},
+     {k:"순서 (first/then/after)", en:"First, I ~. Then, I ~. After that, I usually ~."},
+     {k:"상황별 변화", en:"It depends on the day — on weekdays I ~, but on weekends I ~."},
+     {k:"이유·느낌", en:"Doing this really helps me ~."}],
+   chunks:["The first thing I do is ~","Once I'm done, I ~","more often than not, ~","as a rule, I ~"]},
+  {type:"📖 경험 (Experience)", when:"과거 특정 일화 (과거 시제·스토리)",
+   steps:[
+     {k:"배경 (언제/어디/누구)", en:"This happened a few years ago, when I ~."},
+     {k:"전개", en:"Everything was going fine until ~."},
+     {k:"사건·문제", en:"All of a sudden, ~."},
+     {k:"해결", en:"In the end, ~."},
+     {k:"회상·느낌", en:"Looking back, it was ~. I'll never forget it."}],
+   chunks:["out of nowhere, ~","to make a long story short, ~","it turned out that ~","before I knew it, ~"]},
+  {type:"⚖️ 비교 (Comparison)", when:"과거 vs 현재 / A vs B",
+   steps:[
+     {k:"과거", en:"Back in the day, people used to ~."},
+     {k:"현재", en:"But these days, things are totally different. Now, ~."},
+     {k:"핵심 차이", en:"The biggest difference is that ~."},
+     {k:"내 의견", en:"Personally, I think this change is ~, because ~."}],
+   chunks:["used to ~ (예전엔 ~했다)","compared to the past, ~","on the other hand, ~","thanks to technology, ~"]},
+  {type:"🎭 롤플레이 (Role-Play)", when:"질문하기 / 문제해결 / 대안 제시",
+   steps:[
+     {k:"질문하기", en:"Hi, I have a few questions about ~. First, ~? Also, I was wondering ~? And one more thing — ~?"},
+     {k:"문제 설명", en:"Hi, I'm calling because I have a bit of a problem. The thing is, ~."},
+     {k:"대안 2개 제시", en:"So we have two options — we could either ~, or ~. What do you think works better?"}],
+   chunks:["I was wondering if ~","Would it be possible to ~?","The thing is, ~","Let me explain the situation."]},
+  {type:"🧠 어드밴스 (Advanced Opinion)", when:"의견·이슈·장단점 (난이도 5~6)",
+   steps:[
+     {k:"입장", en:"When it comes to ~, I have mixed feelings. / I strongly believe ~."},
+     {k:"이유1 + 예시", en:"First of all, ~. For example, ~."},
+     {k:"반대측·다른 면", en:"On the other hand, some people argue that ~."},
+     {k:"결론", en:"All things considered, I'd say ~."}],
+   chunks:["there are pros and cons to ~","one major benefit is ~","that being said, ~","at the end of the day, ~"]},
+];
+const GUIDE_TIPS=[
+  "서베이는 겹치는 주제로 좁혀 선택하세요. 묘사·습관·경험이 호환되는 카페·공원·음악·영화 같은 주제로 모으면 준비 분량이 확 줄어요.",
+  "1번 자기소개는 채점 제외예요. 긴장 풀고 워밍업하듯 편하게 말하면 됩니다.",
+  "롤플레이(11~13번)는 절대 스킵 금지! 건너뛰면 점수가 크게 깎여요. 질문은 손가락 접으며 3~4개 확실히 던지세요.",
+  "통암기 티 내지 마세요. 템플릿 '뼈대'만 외우고 내용은 매번 본인 경험으로 바꿔야 해요. 외운 티가 나면 감점입니다.",
+  "시제 일관성이 핵심. 경험=과거 시제 끝까지 유지하고, AL 목표면 시제 관리가 특히 중요해요.",
+  "연결어로 '문단'을 만드세요 (first, then, because, however, so). IH의 핵심 = 문단 길이의 이어진 답변.",
+  "필러는 자연스럽게 조금만 (well, you know, I mean). 너무 많으면 오히려 감점돼요.",
+  "완벽한 문법보다 유창함·자연스러움이 우선. 실수해도 멈추지 말고 계속 이어가세요.",
+  "돌발 주제도 결국 묘사·습관·경험 틀의 재활용이에요. 당황하지 말고 아는 템플릿을 적용하세요.",
+  "세트당 1~2분. 너무 짧으면 레벨이 안 나와요. 숫자·이름·감정 같은 구체적 디테일을 넣으세요.",
+  "막히면 'Let me think about that for a second...' 로 시간을 벌고 이어가세요. 긴 침묵·같은 말 반복은 피하기.",
+  "AL 목표면 난이도 6-6, 어드밴스에서 '양쪽 의견 + 내 의견 + 이유' 구조로 확장하세요.",
+];
+function renderGuide(){
+  let html='<div class="fb-section"><h3>🧩 유형별 만능 템플릿</h3><div class="muted" style="margin-bottom:10px">뼈대만 외우고 내용은 매번 본인 경험으로 바꿔 말하세요. <b>~</b> 자리에 본인 얘기를 채우면 됩니다.</div>';
+  GUIDE_TEMPLATES.forEach(t=>{
+    html+=`<details><summary>${escapeHtml(t.type)} <span class="muted" style="font-weight:500">· ${escapeHtml(t.when)}</span></summary>`;
+    t.steps.forEach(s=>{ html+=`<div class="tmpl-step"><b>${escapeHtml(s.k)}</b><span class="tmpl-en">${escapeHtml(s.en)}</span></div>`; });
+    html+=`<div class="chunks-wrap">${t.chunks.map(c=>`<span class="chunk">${escapeHtml(c)}</span>`).join("")}</div></details>`;
+  });
+  html+='</div><div class="fb-section"><h3>🍯 고득점 꿀팁</h3>';
+  GUIDE_TIPS.forEach((t,i)=>{ html+=`<div class="tip"><b>${i+1}.</b> ${escapeHtml(t)}</div>`; });
+  html+='</div>';
+  $("guideBody").innerHTML=html;
+}
+
 // ================== 초기화 ==================
+renderGuide();
 currentModeId = MODES[store.mode]?store.mode:"opic"; MODE=MODES[currentModeId];
 refreshOpicBank();
 $("opicTarget").value=opicTarget; $("mockTarget").value=mock.target;
